@@ -1,6 +1,6 @@
 /** Business identity in one place. Change here and the whole site follows. */
 export const brand = {
-  name: "Desired Icream",
+  name: "Desired Ice Cream",
   tagline: "Freshly churned ice cream, delivered cold",
   owner: "Rakesh Singh",
   phoneDisplay: "+91 78608 27264",
