@@ -3,6 +3,8 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { CalendarCheck, Check, ClipboardList, IceCreamCone, PartyPopper, Users, Wallet } from "lucide-react";
 import { SpinStamp } from "@/components/home/spin-stamp";
+import { OccasionCard } from "@/components/occasions/occasion-card";
+import { occasions } from "@/lib/occasions";
 import { ShareButtons } from "@/components/share/share-buttons";
 import { AppImage } from "@/components/ui";
 import { brand, whatsappLink } from "@/lib/brand";
@@ -91,6 +93,14 @@ export default function WeddingPage() {
             </li>
           ))}
         </ol>
+      </section>
+
+      <section className="container-page">
+        <SectionTitle title="Not a wedding? We do those too" />
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {occasions.filter((o) => o.slug !== "wedding").slice(0, 4).map((o) => <OccasionCard key={o.slug} occasion={o} />)}
+        </div>
+        <div className="mt-6 text-center"><Link href="/events" className="btn-outline">See all occasions</Link></div>
       </section>
 
       <section className="container-page">

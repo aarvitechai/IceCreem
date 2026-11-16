@@ -33,7 +33,8 @@ export function SiteFooter() {
           <h4 className="mb-3 font-display text-lg font-semibold uppercase tracking-wider text-sun">Help</h4>
           <ul className="space-y-2 text-sm text-cream/70">
             <li><Link href="/track" className="hover:text-white">Track your order</Link></li>
-            <li><Link href="/wedding" className="hover:text-white">Wedding and party booking</Link></li>
+            <li><Link href="/wedding" className="hover:text-white">Wedding counters</Link></li>
+            <li><Link href="/events" className="hover:text-white">Birthday, anniversary and other events</Link></li>
             <li><Link href="/partner" className="hover:text-white">Franchise and bulk orders</Link></li>
             <li><Link href="/about" className="hover:text-white">About and FAQ</Link></li>
             <li><Link href="/contact" className="hover:text-white">Contact us</Link></li>
