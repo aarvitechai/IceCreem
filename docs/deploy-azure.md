@@ -597,38 +597,38 @@ flowchart LR
 
 ### 6.1 When your DNS is on Cloudflare
 
-Example used by this project: `desiredicream.redstarvibe.com`, with `redstarvibe.com` managed in Cloudflare.
+Example used by this project: `desiredicecream.redstarvibe.com`, with `redstarvibe.com` managed in Cloudflare.
 
 ```mermaid
 flowchart LR
     V["Visitor"] --> CF["Cloudflare<br/>DNS and optional proxy"]
-    CF --> GW["gateway Container App<br/>certificate for desiredicream.redstarvibe.com"]
+    CF --> GW["gateway Container App<br/>certificate for desiredicecream.redstarvibe.com"]
 ```
 
 1. In Cloudflare, open **redstarvibe.com → DNS → Records** and add:
 
    | Type | Name | Target | Proxy status |
    |---|---|---|---|
-   | CNAME | `desiredicream` | gateway address from step 1 above | **DNS only** (grey cloud) |
-   | TXT | `asuid.desiredicream` | verification id from step 1 above | not applicable |
+   | CNAME | `desiredicecream` | gateway address from step 1 above | **DNS only** (grey cloud) |
+   | TXT | `asuid.desiredicecream` | verification id from step 1 above | not applicable |
 
    Keep the grey cloud for now. Azure must reach the site directly to issue the certificate.
 
 2. Bind the domain:
 
    ```bash
-   az containerapp hostname add -n gateway -g $RG --hostname desiredicream.redstarvibe.com
-   az containerapp hostname bind -n gateway -g $RG --hostname desiredicream.redstarvibe.com \
+   az containerapp hostname add -n gateway -g $RG --hostname desiredicecream.redstarvibe.com
+   az containerapp hostname bind -n gateway -g $RG --hostname desiredicecream.redstarvibe.com \
      --environment $ENV_NAME --validation-method CNAME
    ```
 
-3. Open `https://desiredicream.redstarvibe.com` and check it loads with a valid lock icon.
+3. Open `https://desiredicecream.redstarvibe.com` and check it loads with a valid lock icon.
 
 4. Optional, for Cloudflare caching and protection: switch the record to **Proxied** (orange cloud),
    then set **SSL/TLS → Overview → Full (strict)**. Never use "Flexible", it causes redirect loops.
    Under **Network**, keep **WebSockets** on, so live order tracking works.
 
-> **Moving from a Cloudflare Tunnel to Azure?** Delete the tunnel's CNAME record for `desiredicream`
+> **Moving from a Cloudflare Tunnel to Azure?** Delete the tunnel's CNAME record for `desiredicecream`
 > first, then add the records above. The address stays the same for your customers.
 
 ---
