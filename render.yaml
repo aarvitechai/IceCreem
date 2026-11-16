@@ -1,5 +1,5 @@
 # Render Blueprint: free environment for Desired Ice Cream.
-# Creates the .NET API and the Next.js website from the staging branch.
+# Creates the .NET API and the Next.js website from the production branch.
 # The database is a free Neon PostgreSQL (no expiry), connected by its connection string.
 # Guide: docs/deploy-render.md
 
@@ -9,7 +9,7 @@ services:
     runtime: docker
     plan: free
     region: singapore
-    branch: staging
+    branch: production
     rootDir: backend
     dockerfilePath: ./Dockerfile
     dockerContext: .
@@ -39,7 +39,7 @@ services:
     runtime: docker
     plan: free
     region: singapore
-    branch: staging
+    branch: production
     rootDir: frontend
     dockerfilePath: ./Dockerfile
     dockerContext: .
