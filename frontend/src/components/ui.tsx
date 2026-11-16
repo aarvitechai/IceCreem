@@ -19,9 +19,9 @@ export function PageLoader() {
 
 export function EmptyState({ title, text, action }: { title: string; text?: string; action?: ReactNode }) {
   return (
-    <div className="card flex flex-col items-center gap-3 px-6 py-14 text-center">
-      <span className="text-4xl" aria-hidden>🍦</span>
-      <h3 className="text-lg font-semibold">{title}</h3>
+    <div className="flex flex-col items-center gap-3 rounded-3xl bg-white px-6 py-14 text-center shadow-sm ring-1 ring-choco/5">
+      <span className="flex size-20 items-center justify-center rounded-full bg-pink-light text-4xl" aria-hidden>🍦</span>
+      <h3 className="font-display text-2xl font-semibold uppercase tracking-wide">{title}</h3>
       {text && <p className="max-w-sm text-sm text-choco-light">{text}</p>}
       {action}
     </div>
