@@ -47,7 +47,7 @@ function CheckoutContent() {
   const { items, couponCode } = useAppSelector((s) => s.cart);
   const user = useAppSelector((s) => s.auth.user);
   const lines = items.map((i) => ({ variantId: i.variantId, quantity: i.quantity }));
-  const { data: summary } = useCheckoutSummaryQuery({ items: lines, couponCode }, { skip: items.length === 0 });
+  const { data: summary, isError: summaryFailed, refetch, isFetching } = useCheckoutSummaryQuery({ items: lines, couponCode }, { skip: items.length === 0 });
   const [placeOrder, { isLoading }] = usePlaceOrderMutation();
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<FormValues>({
@@ -153,6 +153,12 @@ function CheckoutContent() {
               <div className="flex justify-between"><dt className="text-choco-light">Delivery</dt><dd>{summary.deliveryCharge === 0 ? "Free" : money(summary.deliveryCharge)}</dd></div>
               <div className="flex items-baseline justify-between border-t border-dashed border-choco/15 pt-3"><dt className="font-display text-lg font-semibold uppercase tracking-wide">To pay</dt><dd className="text-2xl font-bold">{money(summary.grandTotal)}</dd></div>
             </dl>
+          ) : summaryFailed ? (
+            // Without totals the order cannot be placed, so say so instead of leaving a dead button.
+            <div className="rounded-2xl bg-red-50 p-3 text-sm text-red-700" role="alert">
+              Could not load the totals.{" "}
+              <button type="button" onClick={() => refetch()} disabled={isFetching} className="font-semibold underline">Try again</button>
+            </div>
           ) : <Spinner />}
           <button type="submit" disabled={isLoading || !summary} className="btn-primary w-full py-3.5 text-base">
             {isLoading && <Spinner className="size-4 text-white" />} Place order

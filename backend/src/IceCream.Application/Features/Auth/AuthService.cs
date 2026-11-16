@@ -76,6 +76,9 @@ public sealed class AuthService(
     }
 
     /// <summary>Rotates the refresh token. A reused (revoked) token revokes every session of that user.</summary>
+    /// <summary>How long an old refresh token counts as a harmless race after it was rotated.</summary>
+    public static readonly TimeSpan RotationGrace = TimeSpan.FromSeconds(30);
+
     public async Task<AuthSession> RefreshAsync(string? rawToken, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(rawToken)) throw new UnauthorizedException("Session expired.");
@@ -88,6 +91,15 @@ public sealed class AuthService(
 
         if (token.RevokedAt is not null)
         {
+            // Two tabs (or a page load and an expired call) can refresh with the same cookie at once.
+            // The first one rotates it; the second arrives with the old token a moment later. That is not
+            // theft, so do not sign the user out everywhere: answer "retry" and let the browser use the new cookie.
+            var revokedAt = token.RevokedAt.Value;
+            var justRotated = now - revokedAt < RotationGrace && await db.RefreshTokens.AnyAsync(
+                t => t.UserId == token.UserId && t.RevokedAt == null && t.CreatedAt >= revokedAt.AddSeconds(-2), ct);
+            if (justRotated) throw new ConflictException("Session was just renewed. Please retry.");
+
+            // An old token used again later means it may have been stolen: end every session of this user.
             var active = await db.RefreshTokens.Where(t => t.UserId == token.UserId && t.RevokedAt == null).ToListAsync(ct);
             active.ForEach(t => t.RevokedAt = now);
             await db.SaveChangesAsync(ct);

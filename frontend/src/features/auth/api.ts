@@ -1,5 +1,6 @@
 import { api } from "@/store/api";
 import { signedIn, signedOut } from "@/store/authSlice";
+import { refreshSession } from "@/store/session";
 import type { ApiResponse, AuthResult } from "@/lib/types";
 
 export interface LoginInput {
@@ -47,12 +48,6 @@ export const { useLoginMutation, useRegisterMutation, useLogoutMutation } = auth
 
 /** Restores the session on page load using the refresh cookie. */
 export async function restoreSession(dispatch: (action: unknown) => unknown) {
-  try {
-    const res = await fetch("/api/v1/auth/refresh", { method: "POST", credentials: "include" });
-    if (!res.ok) throw new Error("no session");
-    const body = (await res.json()) as ApiResponse<AuthResult>;
-    dispatch(signedIn(body.data));
-  } catch {
-    dispatch(signedOut());
-  }
+  const session = await refreshSession();
+  dispatch(session ? signedIn(session) : signedOut());
 }

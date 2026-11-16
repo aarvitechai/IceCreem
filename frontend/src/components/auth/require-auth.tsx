@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { PageLoader } from "@/components/ui";
 import type { UserRole } from "@/lib/types";
+import { useHydrated } from "@/lib/use-hydrated";
 import { useAppSelector } from "@/store/store";
 
 /**
@@ -12,7 +13,11 @@ import { useAppSelector } from "@/store/store";
  * Shows a loader while the session is restored, sends guests to login, and blocks wrong roles.
  */
 export function RequireAuth({ roles, children }: { roles?: UserRole[]; children: React.ReactNode }) {
-  const { user, status } = useAppSelector((s) => s.auth);
+  const auth = useAppSelector((s) => s.auth);
+  // The server never knows the session, so render the loader until hydration is done, then the real state.
+  const hydrated = useHydrated();
+  const status = hydrated ? auth.status : "checking";
+  const user = hydrated ? auth.user : null;
   const router = useRouter();
   const pathname = usePathname();
 
