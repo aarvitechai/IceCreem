@@ -14,6 +14,7 @@ import { brand } from "@/lib/brand";
 const links = [
   { href: "/products", label: "Shop" },
   { href: "/events", label: "Events" },
+  { href: "/gallery", label: "Gallery" },
   { href: "/partner", label: "Franchise" },
   { href: "/track", label: "Track Order" },
   { href: "/about", label: "About" },
@@ -24,8 +25,10 @@ export function SiteHeader() {
   const pathname = usePathname();
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const user = useAppSelector((s) => s.auth.user);
+  // The session is restored in the browser, so show signed in parts only after hydration.
+  const signedIn = useAppSelector((s) => s.auth.user);
   const hydrated = useHydrated();
+  const user = hydrated ? signedIn : null;
   const saved = useAppSelector((s) => s.cart.items.reduce((n, i) => n + i.quantity, 0));
   const count = hydrated ? saved : 0;
   const [logout] = useLogoutMutation();
@@ -60,21 +63,16 @@ export function SiteHeader() {
           <BrandLogo />
         </Link>
 
-        <nav className="ml-6 hidden gap-1 lg:flex">
+        <nav className="ml-3 hidden gap-0.5 lg:flex xl:ml-6 xl:gap-1">
           {links.map((l) => (
             <Link
               key={l.href}
               href={l.href}
-              className={`whitespace-nowrap rounded-full px-3 py-2 font-display text-base font-medium uppercase tracking-wider transition hover:text-berry ${pathname.startsWith(l.href) ? "text-berry" : "text-choco"}`}
+              className={`whitespace-nowrap rounded-full px-2 py-2 font-display xl:px-3 text-base font-medium uppercase tracking-wider transition hover:text-berry ${pathname.startsWith(l.href) ? "text-berry" : "text-choco"}`}
             >
               {l.label}
             </Link>
           ))}
-          {user && (
-            <button type="button" onClick={() => { setOpen(false); void signOut(); }} className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-left font-display text-lg uppercase tracking-wide text-berry hover:bg-cream-dark sm:hidden">
-              <LogOut className="size-5" /> Log out
-            </button>
-          )}
         </nav>
 
         {searchBox("relative ml-auto hidden w-56 xl:block")}
