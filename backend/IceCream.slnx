@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/IceCream.Api/IceCream.Api.csproj" />
+    <Project Path="src/IceCream.Application/IceCream.Application.csproj" />
+    <Project Path="src/IceCream.Domain/IceCream.Domain.csproj" />
+    <Project Path="src/IceCream.Infrastructure/IceCream.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/IceCream.IntegrationTests/IceCream.IntegrationTests.csproj" />
+    <Project Path="tests/IceCream.UnitTests/IceCream.UnitTests.csproj" />
+  </Folder>
+</Solution>
