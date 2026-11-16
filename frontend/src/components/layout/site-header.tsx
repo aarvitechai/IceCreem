@@ -7,12 +7,15 @@ import { LayoutDashboard, LogOut, Menu, ShoppingBag, User, X } from "lucide-reac
 import { useLogoutMutation } from "@/features/auth/api";
 import { homeFor } from "@/lib/roles";
 import { useAppSelector } from "@/store/store";
+import { BrandLogo } from "./brand-logo";
+import { brand } from "@/lib/brand";
 
 const links = [
   { href: "/products", label: "Ice Creams" },
   { href: "/wedding", label: "Weddings and Events" },
   { href: "/track", label: "Track Order" },
   { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
 ];
 
 export function SiteHeader() {
@@ -35,8 +38,8 @@ export function SiteHeader() {
           {open ? <X className="size-5" /> : <Menu className="size-5" />}
         </button>
 
-        <Link href="/" className="flex items-center gap-2 font-display text-xl font-bold text-berry">
-          <span aria-hidden>🍨</span> Scoop Factory
+        <Link href="/" aria-label={`${brand.name} home`}>
+          <BrandLogo />
         </Link>
 
         <nav className="ml-6 hidden gap-1 md:flex">
