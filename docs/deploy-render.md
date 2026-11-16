@@ -139,6 +139,32 @@ If the record pointed to a Cloudflare Tunnel before, edit it; do not add a secon
 
 `https://desiredicecream.redstarvibe.com` now runs on Render and Neon.
 
+## Two environments: live and test
+
+```mermaid
+flowchart LR
+    DEV["dev"] -- "merge" --> ST["staging branch"]
+    ST -- "auto deploy" --> T["Test site<br/>test-desiredicecream.redstarvibe.com<br/>Neon db: icecream_staging"]
+    ST -- "promote after testing" --> PR["production branch"]
+    PR -- "auto deploy" --> L["Live site<br/>desiredicecream.redstarvibe.com<br/>Neon db: neondb"]
+```
+
+| | Live | Test |
+|---|---|---|
+| Address | `desiredicecream.redstarvibe.com` | `test-desiredicecream.redstarvibe.com` |
+| Branch | `production` | `staging` |
+| Render services | `desiredicecream-web`, `desiredicecream-api` | `desiredicecream-web-staging`, `desiredicecream-api-staging` |
+| Database (Neon project `desired-ice-cream`) | `neondb` | `icecream_staging` |
+| Demo login buttons | Off | On (password `Admin@123`) |
+| API docs | Off | `https://desiredicecream-api-staging.onrender.com/scalar/v1` |
+| Search engines | Indexed | Blocked (`NEXT_PUBLIC_NOINDEX=true`) |
+
+Test site web settings that differ from live: `API_INTERNAL_URL` points to the staging API,
+`NEXT_PUBLIC_SITE_URL=https://test-desiredicecream.redstarvibe.com`, `NEXT_PUBLIC_NOINDEX=true`,
+`NEXT_PUBLIC_SHOW_DEMO_LOGINS=true`. Test site API: `Api__EnableDocs=true`, `Seed__DefaultPassword=Admin@123`.
+
+Render free plans allow 2 custom domains per workspace without a payment method.
+
 ## Updating the site
 
 Every push to the `production` branch redeploys both services automatically. Test changes on `staging` first, then promote them to `production`.

@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Fredoka, Inter } from "next/font/google";
 import { Providers } from "@/components/providers";
-import { brand } from "@/lib/brand";
+import { brand, noIndex } from "@/lib/brand";
 import "./globals.css";
 
 const heading = Fredoka({ subsets: ["latin"], variable: "--font-heading", weight: ["500", "600", "700"] });
@@ -18,6 +18,7 @@ export const metadata: Metadata = {
   openGraph: { type: "website", siteName: brand.name, title: `${brand.name} | Fresh Ice Cream Delivered`, description, locale: "en_IN" },
   twitter: { card: "summary_large_image", title: brand.name, description },
   alternates: { canonical: "/" },
+  robots: noIndex ? { index: false, follow: false } : undefined,
 };
 
 export const viewport: Viewport = { themeColor: "#d63a6e" };
