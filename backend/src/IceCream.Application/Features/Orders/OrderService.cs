@@ -132,8 +132,8 @@ public sealed class OrderService(
         if (q.To.HasValue) query = query.Where(o => o.CreatedAt < q.To.Value.AddDays(1).ToDateTime(TimeOnly.MinValue));
         if (!string.IsNullOrWhiteSpace(q.Search))
         {
-            var s = q.Search.Trim();
-            query = query.Where(o => o.OrderNumber.Contains(s) || o.CustomerName.Contains(s) || o.CustomerMobile.Contains(s));
+            var s = q.Search.Trim().ToLowerInvariant();
+            query = query.Where(o => o.OrderNumber.ToLower().Contains(s) || o.CustomerName.ToLower().Contains(s) || o.CustomerMobile.ToLower().Contains(s));
         }
         return await Rows(query).ToPagedAsync(q, ct);
     }
