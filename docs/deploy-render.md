@@ -1,95 +1,164 @@
-# Free Test Server on Render
+# Free Hosting on Render + Neon
 
-Puts Desired Ice Cream online for testing at `https://desiredicecream.redstarvibe.com`, at no cost.
-For an always-on production setup, use [deploy-azure.md](deploy-azure.md).
+Runs Desired Ice Cream at `https://desiredicecream.redstarvibe.com` on free plans that do not expire:
 
-## What gets created
+- **Render** runs the website and the API (free web services).
+- **Neon** runs the PostgreSQL database (free plan, no expiry).
+- **Cloudflare** keeps the domain.
+
+For a paid, always-on production setup, use [deploy-azure.md](deploy-azure.md).
+
+## How it fits together
 
 ```mermaid
 flowchart LR
     U["Visitor"] --> CF["Cloudflare DNS<br/>desiredicecream.redstarvibe.com"]
-    CF --> WEB["desiredicecream-web<br/>Next.js, free"]
-    WEB -- "/api, /hubs, /uploads<br/>(proxied)" --> API["desiredicecream-api<br/>.NET 10, free"]
-    API --> DB[("desiredicecream-db<br/>PostgreSQL, free")]
+    CF --> WEB["Render: desiredicecream-web<br/>Next.js"]
+    WEB -- "/api, /hubs, /uploads<br/>(proxied)" --> API["Render: desiredicecream-api<br/>.NET 10"]
+    API -- "SSL" --> DB[("Neon<br/>PostgreSQL")]
     GH["GitHub<br/>staging branch"] -. "auto deploy on push" .-> WEB
     GH -. "auto deploy on push" .-> API
 ```
 
-Everything is defined in [`render.yaml`](../render.yaml) at the repository root.
-
-| Piece | Render service | Notes |
+| Piece | Where | Notes |
 |---|---|---|
-| Website | `desiredicecream-web` | Proxies API calls, so visitors only see one address |
-| API | `desiredicecream-api` | Creates tables and starter data on first start |
-| Database | `desiredicecream-db` | PostgreSQL. The API supports SQL Server and PostgreSQL |
+| Website | Render `desiredicecream-web` | Forwards API calls, so visitors see one address |
+| API | Render `desiredicecream-api` | Creates tables and starter data on first start |
+| Database | Neon project `desired-ice-cream` | PostgreSQL. The API supports SQL Server and PostgreSQL |
 
-## Free tier limits (read before you start)
+Render settings live in [`render.yaml`](../render.yaml) at the repository root.
 
-| Limit | What it means for you |
+## Free plan limits
+
+Free plans change from time to time. Check the Render and Neon pricing pages when you sign up.
+
+| Limit | What it means |
 |---|---|
-| Services sleep after 15 minutes without visits | First visit after a break takes about 1 minute. Then it is fast |
-| Free PostgreSQL expires 30 days after creation | Export or upgrade before then, or recreate it (data is lost) |
-| No persistent disk | Product images uploaded in admin are lost when the API restarts or redeploys. Seeded images are fine |
-| 750 free instance hours per month | Enough for testing, since sleeping services do not count |
+| Render services sleep after 15 idle minutes | The first visit after a break takes about 1 minute, then it is fast |
+| Neon database sleeps after a few idle minutes | Wakes up in about a second, the API retries by itself |
+| Neon free storage is about 0.5 GB | Plenty for products, orders and bookings of a small shop |
+| No persistent disk on Render free | Product images uploaded in admin are lost on restart or redeploy. Built in images are fine |
 
-## Steps
+## The order of steps
 
-### 1. Create a Render account
+```mermaid
+flowchart TD
+    A["1. Neon: create database<br/>copy connection string"] --> B["2. Render: sign up<br/>with GitHub"]
+    B --> C["3. Render: New Blueprint<br/>paste connection string + password"]
+    C --> D["4. Wait for build<br/>check API health"]
+    D --> E["5. Test on<br/>onrender.com address"]
+    E --> F["6. Cloudflare: point<br/>desiredicecream to Render"]
+    F --> G["7. Render: verify<br/>custom domain"]
+```
 
-Go to https://render.com and sign up with GitHub. No card is needed for the free plan.
+## Step 1: Create the Neon database
 
-### 2. Create everything from the Blueprint
+1. Go to https://neon.tech and **Sign up** (GitHub or Google login works, no card).
+2. Create a project:
 
-1. In Render: **New → Blueprint**.
-2. Connect the GitHub repository `aarvitechai/IceCreem` (allow Render access if asked).
-3. Branch: `staging`. Render finds `render.yaml`.
-4. It asks for **`Seed__DefaultPassword`**: enter a strong password (8+ characters, one capital letter, one number). Save it, this is the first admin password.
-5. Click **Apply**. The first build takes about 10 minutes.
+   | Field | Value |
+   |---|---|
+   | Project name | `desired-ice-cream` |
+   | Postgres version | latest offered |
+   | Region | **AWS Asia Pacific (Singapore)**, close to Render Singapore |
+   | Database name | `neondb` (default is fine) |
 
-### 3. Check the API address
+3. On the project dashboard click **Connect**.
+4. Turn **Connection pooling OFF**. The API runs database migrations on start, which need a direct connection.
+5. Copy the connection string. It looks like:
 
-Open the `desiredicecream-api` service. Its URL should be `https://desiredicecream-api.onrender.com`.
-If Render gave a different URL, open `desiredicecream-web` → **Environment**, set `API_INTERNAL_URL` to the real API URL, and click **Save, rebuild and deploy**.
+   ```
+   postgresql://neondb_owner:npg_xxxxxxxx@ep-xxxx-xxxx.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+   ```
 
-Test: open `https://desiredicecream-api.onrender.com/health/ready`. It should say `Healthy`.
+   Keep it secret. It contains the database password.
 
-### 4. Connect the domain in Cloudflare
+You do not create any tables. The API does that on its first start.
 
-Render shows the domain under `desiredicecream-web` → **Settings → Custom Domains** with the value to point at.
+## Step 2: Create the Render account
 
-In Cloudflare, **redstarvibe.com → DNS → Records → Add record**:
+Go to https://render.com → **Get Started** → **Sign up with GitHub**. No card is needed for free services.
 
-| Type | Name | Target | Proxy status |
-|---|---|---|---|
-| CNAME | `desiredicecream` | `desiredicecream-web.onrender.com` | **DNS only** (grey cloud) |
+## Step 3: Create the services from the Blueprint
 
-Keep the grey cloud. Render issues the HTTPS certificate itself. Then click **Verify** in Render.
-After a few minutes `https://desiredicecream.redstarvibe.com` opens with a lock icon.
+1. In Render: **+ New → Blueprint**.
+2. **Connect GitHub**. If `aarvitechai/IceCreem` is not listed, click **Configure GitHub** and give Render access to it.
+3. Choose the repository, branch **`staging`**, Blueprint name `desired-ice-cream`.
+4. Render lists two services: `desiredicecream-api` and `desiredicecream-web`.
+5. Render asks for two values:
 
-> If a CNAME for `desiredicecream` already exists (for example one pointing to a Cloudflare Tunnel), edit it instead of adding a second one.
+   | Variable | What to enter |
+   |---|---|
+   | `ConnectionStrings__Default` | the Neon connection string from Step 1 |
+   | `Seed__DefaultPassword` | a strong password (8+ characters, a capital letter and a number). This is the first admin password |
 
-### 5. First login
+6. Click **Apply**.
 
-Open `https://desiredicecream.redstarvibe.com/login`:
+## Step 4: Wait for the build and check the API
+
+The first build takes 10 to 15 minutes. Watch it in each service under **Events** and **Logs**.
+
+When both show **Live**, open:
+
+```
+https://desiredicecream-api.onrender.com/health/ready
+```
+
+It should say `Healthy`. In Neon, **Tables** now shows about 22 tables.
+
+If Render gave the API a different address (for example `desiredicecream-api-x7k2.onrender.com`):
+open `desiredicecream-web` → **Environment**, set `API_INTERNAL_URL` to that address, then **Save, rebuild and deploy**.
+
+## Step 5: Test on the Render address
+
+Open `https://desiredicecream-web.onrender.com`:
+
+- Home page, products and wedding pages load.
+- Log in at `/login` with `superadmin@icecream.local` and your `Seed__DefaultPassword`.
+- Place a test order and open the admin Orders page.
+
+## Step 6: Point the domain to Render
+
+Cloudflare → **redstarvibe.com** → **DNS → Records** → edit the `desiredicecream` record:
 
 | Field | Value |
 |---|---|
-| Email | `superadmin@icecream.local` |
-| Password | the `Seed__DefaultPassword` from step 2 |
+| Type | `CNAME` |
+| Name | `desiredicecream` |
+| Target | `desiredicecream-web.onrender.com` |
+| Proxy status | **DNS only** (grey cloud) |
 
-Then follow Part 5 of the Azure guide: create your own super admin and switch off the starter users.
+Grey cloud matters: Render must reach the site directly to create the HTTPS certificate.
+If the record pointed to a Cloudflare Tunnel before, edit it; do not add a second one.
 
-## Updating
+## Step 7: Verify the domain in Render
+
+1. `desiredicecream-web` → **Settings → Custom Domains**.
+2. Next to `desiredicecream.redstarvibe.com` click **Verify**.
+3. After 5 to 10 minutes it shows **Certificate issued**.
+
+`https://desiredicecream.redstarvibe.com` now runs on Render and Neon.
+
+## Updating the site
 
 Every push to the `staging` branch redeploys both services automatically.
-Watch progress in Render → service → **Events** and **Logs**.
+New database migrations run when the API starts.
+
+## Backups
+
+Neon keeps a short restore window on the free plan. For your own copy, run from any PC with PostgreSQL tools:
+
+```bash
+pg_dump "<neon connection string>" > desired-ice-cream-backup.sql
+```
 
 ## Troubleshooting
 
 | Problem | Fix |
 |---|---|
-| Site takes a minute to open | Normal on the free plan after 15 idle minutes |
-| Website shows "Something went wrong" | API is waking up or the URL in `API_INTERNAL_URL` is wrong (step 3) |
-| API logs show a database error on start | Wait until `desiredicecream-db` is **Available**, then **Manual Deploy → Deploy latest commit** on the API |
-| Domain stuck on "Verifying" | Make sure the Cloudflare record is grey cloud (DNS only) and points to the web service |
+| Site takes a minute to open | Normal on the Render free plan after 15 idle minutes |
+| API logs: `password authentication failed` | Copy the Neon connection string again and update `ConnectionStrings__Default` in the API **Environment** |
+| API logs mention a pooler or lock error | Use the connection string with **Connection pooling OFF** (no `-pooler` in the host name) |
+| Website shows "Something went wrong" | API is still waking up, or `API_INTERNAL_URL` is wrong (Step 4) |
+| Domain stuck on "Verifying" | Cloudflare record must be **grey cloud** and point to `desiredicecream-web.onrender.com` |
 | Logged out on every refresh | Use the `https://` address |

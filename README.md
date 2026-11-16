@@ -52,9 +52,9 @@ API docs: http://localhost:5080/scalar/v1
 The local connection string is in `backend/src/IceCream.Api/appsettings.Development.json`.
 Change `Server=localhost` if your SQL Server has a different name.
 
-## Free test server (Render)
+## Free hosting (Render + Neon)
 
-One click Blueprint with free PostgreSQL: [docs/deploy-render.md](docs/deploy-render.md).
+Render (website + API) and Neon (PostgreSQL), all on free plans: [docs/deploy-render.md](docs/deploy-render.md).
 The API runs on SQL Server (default) or PostgreSQL (`Database__Provider=Postgres`).
 
 ## Deploy to Azure
