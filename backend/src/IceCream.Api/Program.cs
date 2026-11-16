@@ -22,9 +22,9 @@ builder.Services
 var app = builder.Build();
 
 app.UseForwardedHeaders();
+app.UseSerilogRequestLogging();
 app.UseExceptionHandler();
 app.UseSecurityHeaders();
-app.UseSerilogRequestLogging();
 
 if (!app.Environment.IsDevelopment()) app.UseHsts();
 

@@ -54,7 +54,7 @@ public sealed class IssueStockValidator : AbstractValidator<IssueStockRequest>
 public sealed class HawkerService(IAppDbContext db, IClock clock, ICurrentUser currentUser)
 {
     public async Task<IReadOnlyList<HawkerDto>> ListAsync(CancellationToken ct) =>
-        await Rows(db.Hawkers.AsNoTracking()).OrderBy(h => h.Name).ToListAsync(ct);
+        await Rows(db.Hawkers.AsNoTracking().OrderBy(h => h.Name)).ToListAsync(ct);
 
     public async Task<HawkerDetailDto> GetAsync(long id, CancellationToken ct)
     {
