@@ -8,6 +8,8 @@ import { HeroCarousel } from "@/components/product/hero-carousel";
 import { ProductCard, ProductGridSkeleton } from "@/components/product/product-card";
 import { AppImage } from "@/components/ui";
 import { brand, telLink, whatsappLink } from "@/lib/brand";
+import { PostCard } from "@/components/blog/post-card";
+import { posts } from "@/lib/blog";
 import { occasions } from "@/lib/occasions";
 import { serverApi } from "@/lib/server-api";
 
@@ -102,6 +104,13 @@ export default function HomePage() {
           <div className="relative mx-auto aspect-square w-full max-w-xs">
             <AppImage src="/images/packages/gold.svg" alt="Kulfi cart" className="rounded-3xl object-cover" />
           </div>
+        </div>
+      </section>
+
+      <section className="reveal container-page">
+        <SectionTitle title="From our blog" link="/blog" />
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {posts.slice(0, 3).map((p) => <PostCard key={p.slug} post={p} />)}
         </div>
       </section>
 
