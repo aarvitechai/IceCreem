@@ -76,9 +76,9 @@ export function BookingWizard({ packages }: { packages: WeddingPackage[] }) {
 
   if (done) {
     return (
-      <div className="card mx-auto max-w-lg space-y-3 p-10 text-center">
+      <div className="surface mx-auto max-w-lg space-y-3 p-10 text-center">
         <CheckCircle2 className="mx-auto size-12 text-mint" />
-        <h2 className="text-2xl font-bold">Enquiry received</h2>
+        <h2 className="font-display text-3xl font-bold uppercase tracking-wide">Enquiry received</h2>
         <p className="text-choco-light">Booking number <b>{done.bookingNumber}</b> for {fmtDate(done.eventDate)}. Our team will call you and send a quote within 24 hours.</p>
         {user ? <Link href="/account/bookings" className="btn-primary">See my bookings</Link> : <Link href="/" className="btn-primary">Back to home</Link>}
       </div>
@@ -87,7 +87,7 @@ export function BookingWizard({ packages }: { packages: WeddingPackage[] }) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="grid gap-8 lg:grid-cols-[1fr_320px]" noValidate>
-      <div className="card p-6 sm:p-8">
+      <div className="surface p-6 sm:p-8">
         <ol className="mb-8 flex gap-2">
           {STEPS.map((s, i) => (
             <li key={s} className="flex-1">
@@ -99,7 +99,7 @@ export function BookingWizard({ packages }: { packages: WeddingPackage[] }) {
 
         {step === 0 && (
           <div>
-            <h2 className="mb-4 text-xl font-semibold">When is the event?</h2>
+            <h2 className="mb-4 font-display text-2xl font-semibold uppercase tracking-wide">When is the event?</h2>
             <Calendar selected={values.eventDate} onSelect={(d) => setValue("eventDate", d, { shouldValidate: true })} />
             {errors.eventDate && <p className="field-error">{errors.eventDate.message}</p>}
           </div>
@@ -107,7 +107,7 @@ export function BookingWizard({ packages }: { packages: WeddingPackage[] }) {
 
         {step === 1 && (
           <div className="space-y-4">
-            <h2 className="text-xl font-semibold">Tell us about the event</h2>
+            <h2 className="font-display text-2xl font-semibold uppercase tracking-wide">Tell us about the event</h2>
             <div className="grid gap-4 sm:grid-cols-2">
               <SelectField label="Event type" {...register("eventType")}>
                 <option>Wedding</option><option>Reception</option><option>Party</option>
@@ -127,7 +127,7 @@ export function BookingWizard({ packages }: { packages: WeddingPackage[] }) {
 
         {step === 2 && (
           <div className="space-y-3">
-            <h2 className="text-xl font-semibold">Choose a package</h2>
+            <h2 className="font-display text-2xl font-semibold uppercase tracking-wide">Choose a package</h2>
             {packages.map((p) => (
               <label key={p.id} className={`flex cursor-pointer items-center gap-4 rounded-2xl border-2 p-4 ${Number(values.packageId) === p.id ? "border-berry bg-berry-light" : "border-choco/10"}`}>
                 <input type="radio" value={p.id} {...register("packageId")} className="accent-berry" />
@@ -148,7 +148,7 @@ export function BookingWizard({ packages }: { packages: WeddingPackage[] }) {
 
         {step === 3 && (
           <div className="space-y-4">
-            <h2 className="text-xl font-semibold">How can we reach you?</h2>
+            <h2 className="font-display text-2xl font-semibold uppercase tracking-wide">How can we reach you?</h2>
             <TextField label="Your name" {...register("contactName")} error={errors.contactName?.message} />
             <TextField label="Mobile" inputMode="numeric" {...register("mobile")} error={errors.mobile?.message} />
             <TextField label="Email (optional)" type="email" {...register("email")} error={errors.email?.message} />
@@ -165,8 +165,8 @@ export function BookingWizard({ packages }: { packages: WeddingPackage[] }) {
         </div>
       </div>
 
-      <aside className="card h-fit space-y-3 p-6 lg:sticky lg:top-24">
-        <h3 className="font-semibold">Summary</h3>
+      <aside className="surface h-fit space-y-3 p-6 lg:sticky lg:top-24">
+        <h3 className="font-display text-xl font-semibold uppercase tracking-wide">Summary</h3>
         <dl className="space-y-2 text-sm">
           <Item label="Date" value={values.eventDate ? fmtDate(values.eventDate) : "Not picked"} />
           <Item label="Event" value={values.eventType} />
@@ -174,7 +174,7 @@ export function BookingWizard({ packages }: { packages: WeddingPackage[] }) {
           <Item label="Package" value={pkg?.name ?? "Custom"} />
         </dl>
         {estimate > 0 && (
-          <div className="rounded-xl bg-mango-light p-4">
+          <div className="rounded-2xl bg-sun/30 p-4">
             <div className="text-xs text-choco-light">Estimated amount</div>
             <div className="text-2xl font-bold">{money(estimate)}</div>
             <div className="text-xs text-choco-light">Final price comes in the quote. Advance is 30 percent.</div>

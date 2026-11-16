@@ -64,7 +64,7 @@ h4 {
   @apply font-display text-3xl font-bold uppercase tracking-wide text-choco sm:text-4xl;
 }
 /* Rounded white box used across the shop pages. */
-@utility panel {
+@utility surface {
   @apply rounded-3xl bg-white shadow-sm ring-1 ring-choco/5;
 }
 @utility card {

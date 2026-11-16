@@ -52,7 +52,7 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-choco/10 bg-white/95 backdrop-blur">
       <div className="container-page flex h-16 items-center gap-2 sm:gap-4">
-        <button className="btn-ghost btn-sm md:hidden" onClick={() => setOpen((o) => !o)} aria-label="Menu">
+        <button className="btn-ghost btn-sm lg:hidden" onClick={() => setOpen((o) => !o)} aria-label="Menu">
           {open ? <X className="size-5" /> : <Menu className="size-5" />}
         </button>
 
@@ -60,12 +60,12 @@ export function SiteHeader() {
           <BrandLogo />
         </Link>
 
-        <nav className="ml-6 hidden gap-1 md:flex">
+        <nav className="ml-6 hidden gap-1 lg:flex">
           {links.map((l) => (
             <Link
               key={l.href}
               href={l.href}
-              className={`rounded-full px-3 py-2 font-display text-base font-medium uppercase tracking-wider transition hover:text-berry ${pathname.startsWith(l.href) ? "text-berry" : "text-choco"}`}
+              className={`whitespace-nowrap rounded-full px-3 py-2 font-display text-base font-medium uppercase tracking-wider transition hover:text-berry ${pathname.startsWith(l.href) ? "text-berry" : "text-choco"}`}
             >
               {l.label}
             </Link>
@@ -77,9 +77,9 @@ export function SiteHeader() {
           )}
         </nav>
 
-        {searchBox("relative ml-auto hidden w-56 lg:block")}
+        {searchBox("relative ml-auto hidden w-56 xl:block")}
 
-        <div className="ml-auto flex items-center gap-2 lg:ml-2">
+        <div className="ml-auto flex items-center gap-2 xl:ml-2">
           {user ? (
             <>
               <Link href={homeFor(user.role)} className="btn-ghost btn-sm" title="My account">
@@ -103,7 +103,7 @@ export function SiteHeader() {
       </div>
 
       {open && (
-        <nav className="container-page flex flex-col gap-1 pb-4 md:hidden">
+        <nav className="container-page flex flex-col gap-1 pb-4 lg:hidden">
           {searchBox("relative mb-2")}
           {links.map((l) => (
             <Link key={l.href} href={l.href} onClick={() => setOpen(false)} className="rounded-xl px-3 py-2.5 font-display text-lg uppercase tracking-wide hover:bg-cream-dark">
