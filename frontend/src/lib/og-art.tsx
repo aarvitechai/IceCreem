@@ -11,11 +11,11 @@ export function OgTub() {
       <div
         style={{
           display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-          width: 260, height: 190, background: "#b02a58", borderBottomLeftRadius: 40, borderBottomRightRadius: 40,
+          width: 260, height: 190, background: "#c63d3d", borderBottomLeftRadius: 40, borderBottomRightRadius: 40,
         }}
       >
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", background: "white", borderRadius: 16, padding: "12px 26px" }}>
-          <div style={{ fontSize: 30, color: "#b02a58", letterSpacing: 4 }}>DESIRED</div>
+          <div style={{ fontSize: 30, color: "#c63d3d", letterSpacing: 4 }}>DESIRED</div>
           <div style={{ fontSize: 16, color: "#6b4a3a", letterSpacing: 3 }}>ICE CREAM</div>
         </div>
       </div>

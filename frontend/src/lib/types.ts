@@ -81,6 +81,11 @@ export interface ProductCard {
   price: number;
   mrp: number;
   inStock: boolean;
+  /** Cheapest pack in stock, used by the card's Add to cart button. */
+  quickVariantId: number | null;
+  quickVariantName: string | null;
+  quickVariantPrice: number;
+  quickVariantAvailable: number;
 }
 
 export interface Variant {
