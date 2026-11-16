@@ -79,8 +79,9 @@ public sealed class AdminCatalogService(IAppDbContext db, IFileStorage storage)
         var query = db.Products.AsNoTracking();
         if (q.CategoryId.HasValue) query = query.Where(p => p.CategoryId == q.CategoryId);
         if (q.IsActive.HasValue) query = query.Where(p => p.IsActive == q.IsActive);
-        if (!string.IsNullOrWhiteSpace(q.Search))
-            query = query.Where(p => p.Name.Contains(q.Search) || p.Variants.Any(v => v.Sku.Contains(q.Search)));
+        var s = q.Search?.Trim().ToLowerInvariant();
+        if (!string.IsNullOrEmpty(s))
+            query = query.Where(p => p.Name.ToLower().Contains(s) || p.Variants.Any(v => v.Sku.ToLower().Contains(s)));
 
         return await query.OrderBy(p => p.Name)
             .Select(p => new AdminProductRow(p.Id, p.Name, p.Slug, p.Category!.Name,

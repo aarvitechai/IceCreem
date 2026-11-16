@@ -7,8 +7,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IceCream.Infrastructure.Persistence;
 
-public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options), IAppDbContext
+/// <summary>
+/// Main database context. SQL Server by default; <see cref="PostgresAppDbContext"/> reuses the same model
+/// for PostgreSQL with its own migrations.
+/// </summary>
+public class AppDbContext : DbContext, IAppDbContext
 {
+    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+
+    protected AppDbContext(DbContextOptions options) : base(options) { }
+
     public DbSet<User> Users => Set<User>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<Category> Categories => Set<Category>();
@@ -63,6 +71,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
                 entity.SetQueryFilter(Expression.Lambda(body, p));
             }
 
+            if (Database.IsNpgsql()) AdaptForPostgres(entity);
+
             // Restrict by default. Only aggregate children cascade with their parent.
             foreach (var fk in entity.GetForeignKeys())
             {
@@ -71,6 +81,18 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
                     fk.DeleteBehavior = DeleteBehavior.Restrict;
             }
         }
+    }
+
+    /// <summary>Configurations are written in SQL Server terms; translate the two spots that differ.</summary>
+    private static void AdaptForPostgres(Microsoft.EntityFrameworkCore.Metadata.IMutableEntityType entity)
+    {
+        foreach (var index in entity.GetIndexes())
+            if (index.GetFilter() == Filters.NotDeleted)
+                index.SetFilter("\"IsDeleted\" = false");
+
+        foreach (var property in entity.GetProperties())
+            if (property.GetColumnType() == "nvarchar(max)")
+                property.SetColumnType("text");
     }
 
     private static readonly HashSet<(Type Child, Type Parent)> CascadePairs =

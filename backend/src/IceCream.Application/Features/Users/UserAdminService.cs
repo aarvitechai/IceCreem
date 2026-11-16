@@ -51,8 +51,9 @@ public sealed class UserAdminService(IAppDbContext db, IPasswordService password
     {
         var query = db.Users.AsNoTracking();
         if (q.Role.HasValue) query = query.Where(u => u.Role == q.Role);
-        if (!string.IsNullOrWhiteSpace(q.Search))
-            query = query.Where(u => u.FullName.Contains(q.Search) || u.Email.Contains(q.Search) || u.Mobile.Contains(q.Search));
+        var s = q.Search?.Trim().ToLowerInvariant();
+        if (!string.IsNullOrEmpty(s))
+            query = query.Where(u => u.FullName.ToLower().Contains(s) || u.Email.ToLower().Contains(s) || u.Mobile.ToLower().Contains(s));
 
         return await query.OrderBy(u => u.Role).ThenBy(u => u.FullName)
             .Select(u => new UserRow(u.Id, u.FullName, u.Email, u.Mobile, u.Role, u.IsActive, u.LastLoginAt, u.CreatedAt))
