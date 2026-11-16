@@ -19,7 +19,7 @@ export default function MyBookingsPage() {
   return (
     <div className="grid gap-4 md:grid-cols-2">
       {data.items.map((b) => (
-        <div key={b.id} className="panel space-y-4 p-6">
+        <div key={b.id} className="surface space-y-4 p-6">
           <div className="flex items-start justify-between gap-3">
             <div>
               <div className="text-xs font-semibold uppercase tracking-wider text-choco-light">{b.bookingNumber}</div>
