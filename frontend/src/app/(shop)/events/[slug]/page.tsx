@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { Check, Users } from "lucide-react";
 import { SpinStamp } from "@/components/home/spin-stamp";
 import { OccasionCard, OccasionIcon } from "@/components/occasions/occasion-card";
 import { ShareButtons } from "@/components/share/share-buttons";
-import { AppImage } from "@/components/ui";
+import { AppImage, PageLoader } from "@/components/ui";
 import { brand, whatsappLink } from "@/lib/brand";
 import { occasionBySlug, occasions } from "@/lib/occasions";
 
@@ -30,7 +31,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 const included = ["Trained serving staff", "Decorated counter", "Cups, cones and spoons", "Set up and clean up"];
 
-export default async function OccasionPage({ params }: Props) {
+// Reading params inside Suspense keeps navigation to an occasion instant.
+export default function OccasionPage({ params }: Props) {
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <Occasion params={params} />
+    </Suspense>
+  );
+}
+
+async function Occasion({ params }: Props) {
   const o = occasionBySlug((await params).slug);
   if (!o || o.slug === "wedding") notFound();
   const others = pages.filter((x) => x.slug !== o.slug).slice(0, 4);

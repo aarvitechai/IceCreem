@@ -37,6 +37,7 @@ public class AppDbContext : DbContext, IAppDbContext
     public DbSet<Hawker> Hawkers => Set<Hawker>();
     public DbSet<HawkerStockIssue> HawkerStockIssues => Set<HawkerStockIssue>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
+    public DbSet<Review> Reviews => Set<Review>();
 
     protected override void ConfigureConventions(ModelConfigurationBuilder builder)
     {
@@ -55,6 +56,7 @@ public class AppDbContext : DbContext, IAppDbContext
         builder.Properties<StockTxnType>().HaveConversion<string>().HaveMaxLength(20);
         builder.Properties<BatchStatus>().HaveConversion<string>().HaveMaxLength(20);
         builder.Properties<HawkerIssueStatus>().HaveConversion<string>().HaveMaxLength(20);
+        builder.Properties<ReviewStatus>().HaveConversion<string>().HaveMaxLength(20);
     }
 
     protected override void OnModelCreating(ModelBuilder b)

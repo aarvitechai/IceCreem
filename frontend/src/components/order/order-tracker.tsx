@@ -1,6 +1,7 @@
 "use client";
 
-import { Bike, Check, ChefHat, ClipboardCheck, House, MapPin, Package, Phone, Radio, ThumbsUp, type LucideIcon } from "lucide-react";
+import Link from "next/link";
+import { Bike, Check, ChefHat, ClipboardCheck, House, MapPin, Package, Phone, Radio, Star, ThumbsUp, type LucideIcon } from "lucide-react";
 import { StatusBadge } from "@/components/ui";
 import { dateTime, label, money } from "@/lib/format";
 import type { Order, OrderStatus } from "@/lib/types";
@@ -95,6 +96,15 @@ export function OrderTracker({ order, live }: { order: Order; live?: boolean }) 
       </div>
 
       <aside className="space-y-4">
+        {order.status === "Delivered" && (
+          <Link href="/testimonials#write" className="flex items-center gap-3 rounded-3xl bg-sun p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+            <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-white"><Star className="size-6 fill-sun text-sun" /></span>
+            <span>
+              <span className="block font-display text-lg font-semibold uppercase tracking-wide">Enjoyed it?</span>
+              <span className="block text-sm text-choco/80">Rate us and help other families choose.</span>
+            </span>
+          </Link>
+        )}
         {order.deliveryOtp && order.status !== "Delivered" && !stopped && (
           <div className="rounded-3xl bg-sun p-5 text-center shadow-sm">
             <div className="text-xs font-semibold uppercase tracking-wider">Delivery OTP</div>

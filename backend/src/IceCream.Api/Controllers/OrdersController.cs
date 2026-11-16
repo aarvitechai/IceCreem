@@ -16,12 +16,12 @@ public sealed class OrdersController(OrderService orders) : ApiControllerBase
 
     /// <summary>Guest or logged in customer places an order.</summary>
     [HttpPost("orders")]
-    [EnableRateLimiting(RateLimits.Auth)]
+    [EnableRateLimiting(RateLimits.Submit)]
     public async Task<ActionResult<ApiResponse<OrderDto>>> Place(PlaceOrderRequest req, CancellationToken ct) =>
         Created(await orders.PlaceAsync(req, ct), "Order placed.");
 
     [HttpGet("orders/track/{orderNumber}")]
-    [EnableRateLimiting(RateLimits.Auth)]
+    [EnableRateLimiting(RateLimits.Track)]
     public async Task<ActionResult<ApiResponse<OrderDto>>> Track(string orderNumber, [FromQuery] string mobile, CancellationToken ct) =>
         Success(await orders.TrackAsync(orderNumber, mobile, ct));
 

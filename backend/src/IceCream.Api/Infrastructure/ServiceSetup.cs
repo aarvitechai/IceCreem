@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.RateLimiting;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
@@ -13,9 +14,20 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace IceCream.Api.Infrastructure;
 
+/// <summary>
+/// Named limits. Each has its own bucket per visitor, so browsing or tracking never uses up the
+/// allowance for logging in or placing an order.
+/// </summary>
 public static class RateLimits
 {
+    /// <summary>Login and register: tight, against password guessing.</summary>
     public const string Auth = "auth";
+
+    /// <summary>Placing orders, bookings and reviews.</summary>
+    public const string Submit = "submit";
+
+    /// <summary>Public order tracking, which live pages call again on every update.</summary>
+    public const string Track = "track";
 }
 
 public static class CachePolicies
@@ -61,17 +73,22 @@ public static class ServiceSetup
         services.AddCors(o => o.AddDefaultPolicy(p =>
             p.WithOrigins(origins).AllowAnyHeader().AllowAnyMethod().AllowCredentials()));
 
-        var globalLimit = config.GetValue("RateLimits:GlobalPerMinute", 300);
+        // Browsers reach the API through the Next.js server, so every request arrives from that server.
+        // The global limit is per caller (the web server counts as one), so it must cover the whole site.
+        // Sensitive endpoints are limited per real visitor instead (see VisitorKey).
+        var globalLimit = config.GetValue("RateLimits:GlobalPerMinute", 3000);
         var authLimit = config.GetValue("RateLimits:AuthPerMinute", 10);
+        var submitLimit = config.GetValue("RateLimits:SubmitPerMinute", 20);
+        var trackLimit = config.GetValue("RateLimits:TrackPerMinute", 60);
         services.AddRateLimiter(o =>
         {
             o.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
             o.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(ctx =>
-                RateLimitPartition.GetFixedWindowLimiter(ClientIp(ctx),
+                RateLimitPartition.GetFixedWindowLimiter(CallerIp(ctx),
                     _ => new FixedWindowRateLimiterOptions { PermitLimit = globalLimit, Window = TimeSpan.FromMinutes(1) }));
-            o.AddPolicy(RateLimits.Auth, ctx =>
-                RateLimitPartition.GetFixedWindowLimiter(ClientIp(ctx),
-                    _ => new FixedWindowRateLimiterOptions { PermitLimit = authLimit, Window = TimeSpan.FromMinutes(1) }));
+            AddVisitorPolicy(o, RateLimits.Auth, authLimit);
+            AddVisitorPolicy(o, RateLimits.Submit, submitLimit);
+            AddVisitorPolicy(o, RateLimits.Track, trackLimit);
         });
 
         AddAuth(services, config);
@@ -112,7 +129,25 @@ public static class ServiceSetup
         services.AddAuthorization(Policies.Configure);
     }
 
-    private static string ClientIp(HttpContext ctx) => ctx.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+    private static void AddVisitorPolicy(RateLimiterOptions o, string name, int perMinute) =>
+        o.AddPolicy(name, ctx => RateLimitPartition.GetFixedWindowLimiter($"{name}:{VisitorKey(ctx)}",
+            _ => new FixedWindowRateLimiterOptions { PermitLimit = perMinute, Window = TimeSpan.FromMinutes(1) }));
+
+    /// <summary>The machine that called us (after the hosting load balancer). For site traffic this is the web server.</summary>
+    internal static string CallerIp(HttpContext ctx) => ctx.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+
+    /// <summary>
+    /// The visitor behind the web server: the first address in X-Forwarded-For, which the load balancer in front
+    /// of the web server fills in. Without the header (direct calls) it falls back to the caller.
+    /// A direct caller could send a fake header to get a fresh bucket, so these limits are a courtesy limit;
+    /// brute force on logins is stopped by account lockout and everything stays under the global limit.
+    /// </summary>
+    internal static string VisitorKey(HttpContext ctx)
+    {
+        var forwarded = ctx.Request.Headers["X-Forwarded-For"].ToString();
+        var first = forwarded.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).FirstOrDefault();
+        return string.IsNullOrEmpty(first) ? CallerIp(ctx) : first;
+    }
 
     /// <summary>Applies migrations (or creates the schema for non relational test databases) and seeds demo data.</summary>
     public static async Task InitializeDatabaseAsync(this WebApplication app)

@@ -102,6 +102,20 @@ internal sealed class WeddingPackageConfig : IEntityTypeConfiguration<WeddingPac
     }
 }
 
+internal sealed class ReviewConfig : IEntityTypeConfiguration<Review>
+{
+    public void Configure(EntityTypeBuilder<Review> b)
+    {
+        b.Property(x => x.CustomerName).HasMaxLength(120);
+        b.Property(x => x.City).HasMaxLength(80);
+        b.Property(x => x.Mobile).HasMaxLength(15);
+        b.Property(x => x.Occasion).HasMaxLength(40);
+        b.Property(x => x.Comment).HasMaxLength(1000);
+        // The public page lists approved reviews, newest first.
+        b.HasIndex(x => new { x.Status, x.ApprovedAt });
+    }
+}
+
 internal sealed class CouponConfig : IEntityTypeConfiguration<Coupon>
 {
     public void Configure(EntityTypeBuilder<Coupon> b)

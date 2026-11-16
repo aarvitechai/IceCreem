@@ -17,7 +17,7 @@ public sealed class BookingsController(BookingService bookings) : ApiControllerB
 
     /// <summary>Wedding or event enquiry. Guests can send it too; logged in users see it in their account.</summary>
     [HttpPost("bookings")]
-    [EnableRateLimiting(RateLimits.Auth)]
+    [EnableRateLimiting(RateLimits.Submit)]
     public async Task<ActionResult<ApiResponse<BookingDto>>> Create(BookingRequest req, CancellationToken ct) =>
         Created(await bookings.CreateAsync(req, ct), "Enquiry received. Our team will send a quote soon.");
 
