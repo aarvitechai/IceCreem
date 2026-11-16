@@ -6,9 +6,9 @@ import type { ProductCard as Product } from "@/lib/types";
 export function ProductCard({ product }: { product: Product }) {
   const off = discountPercent(product.mrp, product.price);
   return (
-    <Link href={`/products/${product.slug}`} className="card group flex flex-col overflow-hidden transition hover:-translate-y-1 hover:shadow-lg">
+    <Link href={`/products/${product.slug}`} className="card group flex flex-col overflow-hidden transition duration-300 hover:-translate-y-1.5 hover:shadow-xl">
       <div className="relative aspect-square bg-cream-dark">
-        <AppImage src={product.imageUrl} alt={product.name} className="object-cover transition duration-300 group-hover:scale-105" />
+        <AppImage src={product.imageUrl} alt={product.name} className="object-cover transition duration-500 group-hover:-rotate-2 group-hover:scale-110" />
         {off > 0 && <span className="absolute left-3 top-3 rounded-full bg-berry px-2 py-0.5 text-xs font-bold text-white">{off}% off</span>}
         {!product.inStock && (
           <span className="absolute inset-x-0 bottom-0 bg-choco/80 py-1.5 text-center text-xs font-semibold text-white">Out of stock</span>
