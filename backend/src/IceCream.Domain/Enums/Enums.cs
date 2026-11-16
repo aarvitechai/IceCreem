@@ -43,11 +43,19 @@ public enum PaymentMethod
     Online = 2
 }
 
+/// <summary>Stored as text (max 20 characters), so new occasions need no migration.</summary>
 public enum EventType
 {
     Wedding = 1,
     Reception = 2,
-    Party = 3
+    Party = 3,
+    Birthday = 4,
+    Anniversary = 5,
+    Engagement = 6,
+    BabyShower = 7,
+    Corporate = 8,
+    Festival = 9,
+    KittyParty = 10
 }
 
 public enum BookingStatus

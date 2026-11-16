@@ -14,7 +14,7 @@ export type OrderStatus =
 
 export type PaymentStatus = "Pending" | "Partial" | "Paid" | "Refunded";
 export type PaymentMethod = "CashOnDelivery" | "Online";
-export type EventType = "Wedding" | "Reception" | "Party";
+export type EventType = "Wedding" | "Reception" | "Party" | "Birthday" | "Anniversary" | "Engagement" | "BabyShower" | "Corporate" | "Festival" | "KittyParty";
 export type BookingStatus =
   | "Enquiry"
   | "Quoted"
