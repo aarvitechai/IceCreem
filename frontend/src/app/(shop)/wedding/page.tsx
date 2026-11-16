@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { CalendarCheck, ClipboardList, IceCreamCone, Wallet } from "lucide-react";
+import { ShareButtons } from "@/components/share/share-buttons";
 import { AppImage } from "@/components/ui";
 import { money } from "@/lib/format";
 import { serverApi } from "@/lib/server-api";
@@ -22,6 +23,11 @@ export default function WeddingPage() {
           <Link href="/wedding/book" className="btn w-fit bg-white text-berry hover:bg-cream">Check dates and book</Link>
         </div>
       </section>
+
+      <div className="card flex flex-wrap items-center justify-between gap-3 p-4">
+        <p className="text-sm text-choco-light">Planning with family? Share these packages with them.</p>
+        <ShareButtons path="/wedding" title="Wedding ice cream counters | Desired Ice Cream" text="Live counters and kulfi carts for 100 to 2000 guests" />
+      </div>
 
       <section>
         <h2 className="mb-6 text-3xl font-bold">Packages</h2>
