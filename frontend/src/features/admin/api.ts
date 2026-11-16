@@ -63,6 +63,18 @@ export interface DashboardSummary {
 }
 export interface TrendPoint { date: string; orders: number; revenue: number }
 export interface NamedValue { name: string; value: number; count: number }
+export interface PeriodKpis { revenue: number; orders: number; avgOrderValue: number; customers: number; newCustomers: number; discounts: number; cancelled: number }
+export interface AnalyticsReport {
+  days: number;
+  current: PeriodKpis;
+  previous: PeriodKpis;
+  trend: TrendPoint[];
+  weekdays: NamedValue[];
+  hours: NamedValue[];
+  channels: NamedValue[];
+  cities: NamedValue[];
+  topProducts: NamedValue[];
+}
 
 export interface RawMaterial { id: number; name: string; unit: string; minStockLevel: number; currentStock: number; isLow: boolean }
 export interface RawTxn { id: number; type: StockTxnType; quantity: number; balanceAfter: number; remark: string | null; refNo: string | null; at: string }
@@ -97,6 +109,7 @@ const adminApi = api.injectEndpoints({
     salesTrend: b.query<TrendPoint[], number>({ query: (days) => `/dashboard/admin/sales-trend?days=${days}`, transformResponse: data<TrendPoint[]>, providesTags: ["Dashboard"] }),
     topProducts: b.query<NamedValue[], void>({ query: () => "/dashboard/admin/top-products?limit=6", transformResponse: data<NamedValue[]>, providesTags: ["Dashboard"] }),
     categoryShare: b.query<NamedValue[], void>({ query: () => "/dashboard/admin/category-share", transformResponse: data<NamedValue[]>, providesTags: ["Dashboard"] }),
+    analytics: b.query<AnalyticsReport, number>({ query: (days) => `/dashboard/admin/analytics?days=${days}`, transformResponse: data<AnalyticsReport>, providesTags: ["Dashboard"] }),
     orderStatusShare: b.query<NamedValue[], void>({ query: () => "/dashboard/admin/order-status", transformResponse: data<NamedValue[]>, providesTags: ["Dashboard"] }),
 
     // Catalog
@@ -216,7 +229,7 @@ const adminApi = api.injectEndpoints({
 });
 
 export const {
-  useDashboardSummaryQuery, useSalesTrendQuery, useTopProductsQuery, useCategoryShareQuery, useOrderStatusShareQuery,
+  useDashboardSummaryQuery, useSalesTrendQuery, useTopProductsQuery, useCategoryShareQuery, useOrderStatusShareQuery, useAnalyticsQuery,
   useAdminProductsQuery, useAdminProductQuery, useSaveProductMutation, useSetProductStatusMutation, useDeleteProductMutation,
   useUploadImageMutation, useAdminCategoriesQuery, useSaveCategoryMutation, useDeleteCategoryMutation,
   useAdminBannersQuery, useSaveBannerMutation, useDeleteBannerMutation,
