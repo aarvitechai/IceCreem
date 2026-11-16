@@ -4,7 +4,7 @@ import { Heart, Leaf, Plus, Snowflake } from "lucide-react";
 import { SpinStamp } from "@/components/home/spin-stamp";
 import { PageBanner } from "@/components/layout/page-banner";
 import { AppImage } from "@/components/ui";
-import { brand, telLink, whatsappLink } from "@/lib/brand";
+import { addressText, brand, telLink, whatsappLink } from "@/lib/brand";
 
 export const metadata: Metadata = {
   title: "About and FAQ",
@@ -43,7 +43,7 @@ export default function AboutPage() {
             <h2 className="section-title">Hello from {brand.name}</h2>
             <span className="wave block" aria-hidden />
             <p className="text-lg text-choco-light">
-              {brand.name} is run by {brand.owner}. Every day we turn farm milk, real fruit and good sugar into tubs, cones and kulfi.
+              {brand.name} is run by {brand.owner} from {addressText}. Every day we turn farm milk, real fruit and good sugar into tubs, cones and kulfi.
             </p>
             <p className="text-choco-light">
               Street vendors carry our carts, families order home delivery, and couples trust us with their wedding dessert counter.
