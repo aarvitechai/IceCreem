@@ -10,7 +10,7 @@ export function BrandLogo({ light = false, size = "md" }: { light?: boolean; siz
         <path d="M15 24 l10 0 M14 28 l9 0" stroke="#c98a3e" strokeWidth="1.5" />
         <circle cx="15" cy="17" r="7" fill="#f59ab5" />
         <circle cx="25" cy="17" r="7" fill="#fbe9b7" />
-        <circle cx="20" cy="10" r="7.5" fill="#d63a6e" />
+        <circle cx="20" cy="10" r="7.5" fill="#e3504f" />
         <circle cx="17.5" cy="7.5" r="1.8" fill="#fff" opacity="0.6" />
       </svg>
       <span className={`whitespace-nowrap font-display font-bold leading-none ${size === "lg" ? "text-2xl" : "text-lg sm:text-xl"} ${light ? "text-white" : "text-choco"}`}>

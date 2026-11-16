@@ -20,7 +20,7 @@ export default async function ProductShareImage({ params }: { params: Promise<{ 
 
   return new ImageResponse(
     (
-      <div style={{ width: "100%", height: "100%", display: "flex", background: "linear-gradient(135deg, #d63a6e 0%, #f4a51c 100%)", color: "white", padding: 64, fontFamily: "sans-serif" }}>
+      <div style={{ width: "100%", height: "100%", display: "flex", background: "linear-gradient(135deg, #e3504f 0%, #eb558f 100%)", color: "white", padding: 64, fontFamily: "sans-serif" }}>
         <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", flex: 1 }}>
           <div style={{ display: "flex", fontSize: 30, fontWeight: 700, opacity: 0.95 }}>{brand.name}</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
@@ -29,7 +29,7 @@ export default async function ProductShareImage({ params }: { params: Promise<{ 
           </div>
           <div style={{ display: "flex", gap: 16 }}>
             {from !== null && (
-              <div style={{ display: "flex", background: "white", color: "#b02a58", padding: "14px 28px", borderRadius: 999, fontSize: 36, fontWeight: 800 }}>
+              <div style={{ display: "flex", background: "white", color: "#c63d3d", padding: "14px 28px", borderRadius: 999, fontSize: 36, fontWeight: 800 }}>
                 from {money(from)}
               </div>
             )}

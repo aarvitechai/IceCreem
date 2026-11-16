@@ -7,7 +7,7 @@ import { money } from "@/lib/format";
  * Every chart here shows a single series, so one brand hue, no legend (the title names it),
  * thin marks, recessive grid and a hover tooltip.
  */
-const SERIES = "#d63a6e";
+const SERIES = "#e3504f";
 const GRID = "rgba(59,36,24,0.08)";
 const AXIS = { fontSize: 12, fill: "#6b4a3a" };
 
