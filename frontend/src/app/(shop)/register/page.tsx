@@ -7,6 +7,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
+import { AuthLayout } from "@/components/auth/auth-layout";
+import { PasswordField } from "@/components/auth/password-field";
 import { PageLoader, Spinner, TextField } from "@/components/ui";
 import { useRegisterMutation } from "@/features/auth/api";
 import { errorMessage } from "@/store/api";
@@ -43,16 +45,19 @@ function RegisterForm() {
   };
 
   return (
-    <div className="container-page flex justify-center py-16">
-      <form onSubmit={handleSubmit(onSubmit)} className="card w-full max-w-md space-y-4 p-8" noValidate>
-        <h1 className="text-2xl font-bold">Create your account</h1>
-        <TextField label="Full name" autoComplete="name" {...register("fullName")} error={errors.fullName?.message} />
-        <TextField label="Email" type="email" autoComplete="email" {...register("email")} error={errors.email?.message} />
-        <TextField label="Mobile" inputMode="numeric" autoComplete="tel" {...register("mobile")} error={errors.mobile?.message} />
-        <TextField label="Password" type="password" autoComplete="new-password" {...register("password")} error={errors.password?.message} hint="8+ characters with a capital letter and a number" />
-        <button disabled={isLoading} className="btn-primary w-full py-3">{isLoading && <Spinner className="size-4 text-white" />} Create account</button>
-        <p className="text-center text-sm text-choco-light">Already have an account? <Link href="/login" className="font-semibold text-berry">Log in</Link></p>
+    <AuthLayout title="Join the scoop club" subtitle="One free account for orders, tracking and event bookings." image="/images/products/strawberry-swirl.svg">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+        <h2 className="font-display text-3xl font-semibold uppercase tracking-wide">Create account</h2>
+        <span className="wave block" aria-hidden />
+        <TextField label="Full name" autoComplete="name" className="input rounded-full" {...register("fullName")} error={errors.fullName?.message} />
+        <div className="grid gap-4 sm:grid-cols-2">
+          <TextField label="Email" type="email" autoComplete="email" className="input rounded-full" {...register("email")} error={errors.email?.message} />
+          <TextField label="Mobile" inputMode="numeric" autoComplete="tel" className="input rounded-full" {...register("mobile")} error={errors.mobile?.message} />
+        </div>
+        <PasswordField label="Password" autoComplete="new-password" {...register("password")} error={errors.password?.message} hint="8+ characters with a capital letter and a number" />
+        <button disabled={isLoading} className="btn-primary w-full py-3.5 text-base">{isLoading && <Spinner className="size-4 text-white" />} Create account</button>
+        <p className="text-center text-sm text-choco-light">Already have an account? <Link href={`/login${nextUrl ? `?next=${encodeURIComponent(nextUrl)}` : ""}`} className="font-semibold text-berry hover:underline">Log in</Link></p>
       </form>
-    </div>
+    </AuthLayout>
   );
 }
