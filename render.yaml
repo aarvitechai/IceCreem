@@ -1,13 +1,7 @@
-# Render Blueprint: free test environment for Desired Ice Cream.
-# Creates a PostgreSQL database, the .NET API and the Next.js website from the staging branch.
+# Render Blueprint: free environment for Desired Ice Cream.
+# Creates the .NET API and the Next.js website from the staging branch.
+# The database is a free Neon PostgreSQL (no expiry), connected by its connection string.
 # Guide: docs/deploy-render.md
-
-databases:
-  - name: desiredicecream-db
-    plan: free
-    region: singapore
-    databaseName: icecream
-    user: icecream
 
 services:
   - type: web
@@ -30,10 +24,10 @@ services:
         value: Postgres
       - key: Database__MigrateOnStartup
         value: "true"
+      # Asked once when you create the Blueprint. Paste the Neon connection string
+      # (postgresql://...neon.tech/neondb?sslmode=require).
       - key: ConnectionStrings__Default
-        fromDatabase:
-          name: desiredicecream-db
-          property: connectionString
+        sync: false
       - key: Jwt__Key
         generateValue: true
       # Asked once when you create the Blueprint. First password of the starter admin users.

@@ -62,7 +62,8 @@ public static class DependencyInjection
     }
 
     /// <summary>
-    /// Hosts like Render give "postgresql://user:pass@host:port/db". Npgsql wants key=value pairs.
+    /// Hosts like Neon and Render give "postgresql://user:pass@host:port/db?sslmode=require".
+    /// Npgsql wants key=value pairs.
     /// </summary>
     public static string ToNpgsqlConnectionString(string conn)
     {
@@ -81,6 +82,20 @@ public static class DependencyInjection
             Database = uri.AbsolutePath.TrimStart('/'),
             SslMode = Npgsql.SslMode.Prefer
         };
+
+        // Neon and other cloud hosts add "?sslmode=require&channel_binding=require".
+        foreach (var pair in uri.Query.TrimStart('?').Split('&', StringSplitOptions.RemoveEmptyEntries))
+        {
+            var kv = pair.Split('=', 2);
+            var key = kv[0].ToLowerInvariant();
+            var value = kv.Length > 1 ? Uri.UnescapeDataString(kv[1]) : string.Empty;
+
+            if (key == "sslmode" && Enum.TryParse<Npgsql.SslMode>(value.Replace("-", ""), ignoreCase: true, out var ssl))
+                builder.SslMode = ssl;
+            else if (key == "channel_binding" && Enum.TryParse<Npgsql.ChannelBinding>(value, ignoreCase: true, out var binding))
+                builder.ChannelBinding = binding;
+        }
+
         return builder.ConnectionString;
     }
 }
