@@ -17,7 +17,7 @@ export default function TrackPage() {
     <PageBanner title="Track your order" text="See every step live, from our freezer to your door." />
     <div className="container-page flex flex-col items-center gap-4 py-10">
       <form
-        className="panel w-full max-w-md space-y-4 p-6 sm:p-8"
+        className="surface w-full max-w-md space-y-4 p-6 sm:p-8"
         onSubmit={(e) => {
           e.preventDefault();
           if (valid) router.push(`/track/${orderNumber.trim().toUpperCase()}?mobile=${mobile}`);
