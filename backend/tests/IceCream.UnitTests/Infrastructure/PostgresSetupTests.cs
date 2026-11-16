@@ -39,6 +39,18 @@ public class PostgresSetupTests
     }
 
     [Fact]
+    public void Neon_url_keeps_ssl_and_channel_binding()
+    {
+        var result = DependencyInjection.ToNpgsqlConnectionString(
+            "postgresql://neondb_owner:npg_Ab12@ep-cool-sky-a1b2c3.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require");
+
+        Assert.Contains("Host=ep-cool-sky-a1b2c3.ap-southeast-1.aws.neon.tech", result);
+        Assert.Contains("Database=neondb", result);
+        Assert.Contains("SSL Mode=Require", result);
+        Assert.Contains("Channel Binding=Require", result);
+    }
+
+    [Fact]
     public void Url_without_port_uses_default()
     {
         var result = DependencyInjection.ToNpgsqlConnectionString("postgres://ice:pw@host/db");
