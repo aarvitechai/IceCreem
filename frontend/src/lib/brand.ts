@@ -6,7 +6,7 @@ export const brand = {
   phoneDisplay: "+91 78608 27264",
   phoneE164: "+917860827264",
   whatsapp: "917860827264",
-  siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "https://desiredicream.redstarvibe.com",
+  siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "https://desiredicecream.redstarvibe.com",
 } as const;
 
 export const telLink = `tel:${brand.phoneE164}`;
