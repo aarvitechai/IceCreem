@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
+import { PageBanner } from "@/components/layout/page-banner";
 import { ProductFilters } from "@/components/product/product-filters";
 import { ProductCard, ProductGridSkeleton } from "@/components/product/product-card";
 import { EmptyState } from "@/components/ui";
@@ -16,14 +17,7 @@ type Search = Record<string, string | string[] | undefined>;
 export default function ProductsPage({ searchParams }: { searchParams: Promise<Search> }) {
   return (
     <div className="pb-8">
-      <section className="relative overflow-hidden bg-gradient-to-br from-berry to-pink py-10 text-center text-white sm:py-14">
-        <span aria-hidden className="absolute -left-10 -top-10 size-40 rounded-full bg-white/10" />
-        <span aria-hidden className="absolute -bottom-16 right-4 size-52 rounded-full bg-sun/30" />
-        <div className="container-page relative">
-          <h1 className="font-display text-4xl font-bold uppercase tracking-wide sm:text-6xl">Shop all treats</h1>
-          <p className="mt-2 text-white/90">Fresh every morning. Prices include GST. Free delivery above Rs 499.</p>
-        </div>
-      </section>
+      <PageBanner title="Shop all treats" text="Fresh every morning. Prices include GST. Free delivery above Rs 499." />
       <div className="container-page pt-8">
       <Suspense fallback={<div className="mb-6 h-12 animate-pulse rounded-2xl bg-cream-dark" />}>
         <Filters />

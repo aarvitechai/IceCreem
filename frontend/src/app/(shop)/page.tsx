@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { Suspense } from "react";
-import { Clock, Leaf, PartyPopper, Snowflake, Sparkles, Truck } from "lucide-react";
+import { Clock, Handshake, Leaf, PartyPopper, Snowflake, Sparkles, Truck } from "lucide-react";
+import { ExperiencePanels } from "@/components/home/experience-panels";
 import { FlavourMarquee } from "@/components/home/flavour-marquee";
+import { SpinStamp } from "@/components/home/spin-stamp";
 import { HeroCarousel } from "@/components/product/hero-carousel";
 import { ProductCard, ProductGridSkeleton } from "@/components/product/product-card";
 import { AppImage } from "@/components/ui";
@@ -31,7 +33,8 @@ export default function HomePage() {
         <Hero />
       </Suspense>
 
-      <div className="container-page -mt-8 sm:-mt-12">
+      <div className="container-page relative -mt-8 sm:-mt-12">
+        <SpinStamp className="absolute -top-28 right-6 z-10 hidden md:block lg:-top-32" />
         <FlavourMarquee />
       </div>
 
@@ -40,6 +43,11 @@ export default function HomePage() {
         <Suspense fallback={<div className="h-40 animate-pulse rounded-3xl bg-cream-dark" />}>
           <Categories />
         </Suspense>
+      </section>
+
+      <section className="reveal container-page">
+        <SectionTitle title="Our world of ice cream" />
+        <ExperiencePanels />
       </section>
 
       <section className="reveal container-page">
@@ -102,7 +110,17 @@ export default function HomePage() {
             </li>
           ))}
         </ol>
-        <div className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-3xl bg-choco p-6 text-cream sm:p-8">
+        <div className="mt-6 grid gap-4 lg:grid-cols-2">
+          <Link href="/partner" className="group flex items-center gap-4 rounded-3xl bg-sun p-6 transition hover:-translate-y-1 hover:shadow-md sm:p-8">
+            <span className="flex size-14 shrink-0 items-center justify-center rounded-full bg-white text-berry transition group-hover:rotate-12">
+              <Handshake className="size-7" />
+            </span>
+            <div>
+              <h3 className="font-display text-2xl font-bold uppercase tracking-wide">Grow with us</h3>
+              <p className="text-sm text-choco-light">Franchise outlets, distributors and bulk supply. Send an enquiry.</p>
+            </div>
+          </Link>
+          <div className="flex flex-wrap items-center justify-between gap-4 rounded-3xl bg-choco p-6 text-cream sm:p-8">
           <div>
             <h3 className="flex items-center gap-2 font-display text-2xl font-bold uppercase tracking-wide">
               <Sparkles className="size-5 text-sun" /> Prefer to order by phone?
@@ -112,6 +130,7 @@ export default function HomePage() {
           <div className="flex flex-wrap gap-3">
             <a href={telLink} className="btn bg-white text-choco hover:bg-cream">Call now</a>
             <a href={whatsappLink()} target="_blank" rel="noreferrer" className="btn bg-[#25d366] text-white hover:brightness-95">WhatsApp</a>
+          </div>
           </div>
         </div>
       </section>

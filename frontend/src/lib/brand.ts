@@ -1,5 +1,7 @@
 /** Business identity in one place. Change here and the whole site follows. */
 export const brand = {
+  /** Same as Order:FreeDeliveryAbove in the API settings. */
+  freeDeliveryAbove: 499,
   name: "Desired Ice Cream",
   tagline: "Freshly churned ice cream, delivered cold",
   owner: "Rakesh Singh",
