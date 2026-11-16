@@ -33,28 +33,28 @@ export function ProductFilters({ categories }: { categories: { slug: string; nam
   const active = params.get("category");
 
   return (
-    <div className="mb-6 space-y-4">
-      <div className="flex flex-col gap-3 sm:flex-row">
+    <div className="mb-8 space-y-4">
+      <div className="flex flex-col gap-3 rounded-3xl bg-white p-3 shadow-sm ring-1 ring-choco/5 sm:flex-row">
         <label className="relative flex-1">
           <span className="sr-only">Search</span>
           <Search className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-choco/40" />
-          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search vanilla, kulfi, mango..." className="input pl-10" />
+          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search vanilla, kulfi, mango..." className="input rounded-full pl-10" />
         </label>
-        <select value={params.get("sort") ?? ""} onChange={(e) => update("sort", e.target.value || null)} className="input sm:w-52" aria-label="Sort">
+        <select value={params.get("sort") ?? ""} onChange={(e) => update("sort", e.target.value || null)} className="input rounded-full sm:w-52" aria-label="Sort">
           <option value="">Featured first</option>
           <option value="price_asc">Price: low to high</option>
           <option value="price_desc">Price: high to low</option>
           <option value="newest">Newest</option>
           <option value="name">Name</option>
         </select>
-        <select value={params.get("maxPrice") ?? ""} onChange={(e) => update("maxPrice", e.target.value || null)} className="input sm:w-44" aria-label="Price">
+        <select value={params.get("maxPrice") ?? ""} onChange={(e) => update("maxPrice", e.target.value || null)} className="input rounded-full sm:w-44" aria-label="Price">
           <option value="">Any price</option>
           <option value="50">Under Rs 50</option>
           <option value="200">Under Rs 200</option>
           <option value="500">Under Rs 500</option>
         </select>
       </div>
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="-mx-4 flex items-center gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:justify-center sm:overflow-visible sm:px-0">
         <Chip active={!active} onClick={() => update("category", null)}>All</Chip>
         {categories.map((c) => (
           <Chip key={c.slug} active={active === c.slug} onClick={() => update("category", c.slug)}>{c.name}</Chip>
@@ -70,7 +70,7 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
     <button
       type="button"
       onClick={onClick}
-      className={`rounded-full border px-4 py-1.5 text-sm font-medium transition ${active ? "border-berry bg-berry text-white" : "border-choco/15 bg-white hover:border-berry hover:text-berry"}`}
+      className={`shrink-0 whitespace-nowrap rounded-full border-2 px-5 py-2 font-display text-sm font-semibold uppercase tracking-wider transition ${active ? "border-berry bg-berry text-white shadow-md" : "border-choco/10 bg-white text-choco hover:border-berry hover:text-berry"}`}
     >
       {children}
     </button>
