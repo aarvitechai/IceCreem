@@ -27,7 +27,7 @@ export function OrderTracker({ order, live }: { order: Order; live?: boolean }) 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
       <div className="space-y-6">
-        <section className="panel p-6">
+        <section className="surface p-6">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <div>
               <div className="text-xs font-semibold uppercase tracking-wider text-choco-light">Order</div>
@@ -75,7 +75,7 @@ export function OrderTracker({ order, live }: { order: Order; live?: boolean }) 
         </section>
 
         {order.status === "OutForDelivery" && (
-          <section className="panel overflow-hidden">
+          <section className="surface overflow-hidden">
             <div className="flex items-center justify-between p-4">
               <div className="font-display text-lg font-semibold uppercase tracking-wide">Your delivery is on the way</div>
               {order.lastLocationAt && <div className="text-xs text-choco-light">Updated {dateTime(order.lastLocationAt)}</div>}
@@ -103,7 +103,7 @@ export function OrderTracker({ order, live }: { order: Order; live?: boolean }) 
           </div>
         )}
         {order.deliveryPartnerName && (
-          <div className="panel flex items-center justify-between p-5">
+          <div className="surface flex items-center justify-between p-5">
             <div>
               <div className="text-xs font-semibold uppercase tracking-wider text-choco-light">Delivery partner</div>
               <div className="font-semibold">{order.deliveryPartnerName}</div>
@@ -113,7 +113,7 @@ export function OrderTracker({ order, live }: { order: Order; live?: boolean }) 
             )}
           </div>
         )}
-        <div className="panel p-5">
+        <div className="surface p-5">
           <h3 className="mb-3 font-display text-xl font-semibold uppercase tracking-wide">Bill</h3>
           <ul className="space-y-1.5 text-sm">
             {order.items.map((i) => (
@@ -130,7 +130,7 @@ export function OrderTracker({ order, live }: { order: Order; live?: boolean }) 
             <div className="flex justify-between text-xs text-choco-light"><dt>Payment</dt><dd>{label(order.paymentMethod)}, {label(order.paymentStatus)}</dd></div>
           </dl>
         </div>
-        <div className="panel p-5 text-sm">
+        <div className="surface p-5 text-sm">
           <h3 className="mb-1 flex items-center gap-1.5 font-display text-lg font-semibold uppercase tracking-wide"><MapPin className="size-4 text-berry" /> Deliver to</h3>
           <p className="text-choco-light">{order.customerName}, {order.addressLine}, {order.city} {order.pincode}</p>
         </div>

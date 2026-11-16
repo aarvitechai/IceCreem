@@ -19,7 +19,7 @@ export default function MyOrdersPage() {
   return (
     <div className="space-y-3">
       {data.items.map((o) => (
-        <Link key={o.id} href={`/account/orders/${o.id}`} className="panel group flex items-center gap-4 p-4 transition hover:-translate-y-0.5 hover:shadow-md sm:p-5">
+        <Link key={o.id} href={`/account/orders/${o.id}`} className="surface group flex items-center gap-4 p-4 transition hover:-translate-y-0.5 hover:shadow-md sm:p-5">
           <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-pink-light text-berry"><Package className="size-6" /></span>
           <div className="min-w-0 flex-1">
             <div className="font-display text-lg font-semibold uppercase tracking-wide">{o.orderNumber}</div>
