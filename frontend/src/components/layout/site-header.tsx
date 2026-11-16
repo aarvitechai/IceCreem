@@ -51,7 +51,7 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-choco/10 bg-white/95 backdrop-blur">
-      <div className="container-page flex h-16 items-center gap-4">
+      <div className="container-page flex h-16 items-center gap-2 sm:gap-4">
         <button className="btn-ghost btn-sm md:hidden" onClick={() => setOpen((o) => !o)} aria-label="Menu">
           {open ? <X className="size-5" /> : <Menu className="size-5" />}
         </button>
@@ -70,6 +70,11 @@ export function SiteHeader() {
               {l.label}
             </Link>
           ))}
+          {user && (
+            <button type="button" onClick={() => { setOpen(false); void signOut(); }} className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-left font-display text-lg uppercase tracking-wide text-berry hover:bg-cream-dark sm:hidden">
+              <LogOut className="size-5" /> Log out
+            </button>
+          )}
         </nav>
 
         {searchBox("relative ml-auto hidden w-56 lg:block")}
@@ -81,7 +86,7 @@ export function SiteHeader() {
                 {user.role === "Customer" ? <User className="size-4" /> : <LayoutDashboard className="size-4" />}
                 <span className="hidden sm:inline">{user.fullName.split(" ")[0]}</span>
               </Link>
-              <button onClick={signOut} className="btn-ghost btn-sm" aria-label="Log out" title="Log out">
+              <button onClick={signOut} className="btn-ghost btn-sm hidden sm:inline-flex" aria-label="Log out" title="Log out">
                 <LogOut className="size-4" />
               </button>
             </>
@@ -105,6 +110,11 @@ export function SiteHeader() {
               {l.label}
             </Link>
           ))}
+          {user && (
+            <button type="button" onClick={() => { setOpen(false); void signOut(); }} className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-left font-display text-lg uppercase tracking-wide text-berry hover:bg-cream-dark sm:hidden">
+              <LogOut className="size-5" /> Log out
+            </button>
+          )}
         </nav>
       )}
     </header>
