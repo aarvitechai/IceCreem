@@ -19,24 +19,24 @@ export default function MyBookingsPage() {
   return (
     <div className="grid gap-4 md:grid-cols-2">
       {data.items.map((b) => (
-        <div key={b.id} className="card space-y-3 p-6">
+        <div key={b.id} className="panel space-y-4 p-6">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <div className="text-sm text-choco-light">{b.bookingNumber}</div>
-              <h3 className="text-xl font-bold">{b.eventType} on {date(b.eventDate)}</h3>
+              <div className="text-xs font-semibold uppercase tracking-wider text-choco-light">{b.bookingNumber}</div>
+              <h3 className="font-display text-2xl font-semibold uppercase leading-tight tracking-wide">{b.eventType} on {date(b.eventDate)}</h3>
               <div className="text-sm text-choco-light">{b.venueName} . {b.guestCount} guests . {b.packageName ?? "Custom"}</div>
             </div>
             <StatusBadge value={b.status} />
           </div>
 
           {b.quotedAmount > 0 ? (
-            <dl className="grid grid-cols-3 gap-2 rounded-xl bg-cream p-3 text-center text-sm">
+            <dl className="grid grid-cols-3 gap-2 rounded-2xl bg-cream p-3 text-center text-sm">
               <div><dt className="text-xs text-choco-light">Quote</dt><dd className="font-bold">{money(b.quotedAmount)}</dd></div>
               <div><dt className="text-xs text-choco-light">Paid</dt><dd className="font-bold text-emerald-700">{money(b.advancePaid)}</dd></div>
               <div><dt className="text-xs text-choco-light">Balance</dt><dd className="font-bold">{money(b.balanceAmount)}</dd></div>
             </dl>
           ) : (
-            <p className="rounded-xl bg-mango-light p-3 text-sm">Our team is preparing your quote. Estimate: {money(b.estimatedAmount)}</p>
+            <p className="rounded-2xl bg-sun/30 p-3 text-sm">Our team is preparing your quote. Estimate: {money(b.estimatedAmount)}</p>
           )}
 
           {b.status === "Quoted" && (

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
+import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { OrderTracker } from "@/components/order/order-tracker";
 import { EmptyState, Modal, PageLoader, TextArea } from "@/components/ui";
@@ -37,7 +38,7 @@ export default function MyOrderPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <Link href="/account/orders" className="text-sm font-semibold text-berry">Back to orders</Link>
+        <Link href="/account/orders" className="flex items-center gap-1 text-sm font-semibold uppercase tracking-wider text-berry hover:underline"><ArrowLeft className="size-4" /> All orders</Link>
         {canCancel && <button onClick={() => setOpen(true)} className="btn-outline btn-sm">Cancel order</button>}
       </div>
       <OrderTracker order={order} live />
