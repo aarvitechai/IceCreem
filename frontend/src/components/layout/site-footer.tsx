@@ -27,6 +27,7 @@ export function SiteFooter() {
             <li><Link href="/products?category=cones" className="hover:text-white">Cones</Link></li>
             <li><Link href="/products?category=kulfi" className="hover:text-white">Kulfi</Link></li>
             <li><Link href="/products?category=family" className="hover:text-white">Family Packs</Link></li>
+            <li><Link href="/gallery" className="hover:text-white">Gallery</Link></li>
           </ul>
         </div>
         <div>
