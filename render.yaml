@@ -14,7 +14,8 @@ services:
     dockerfilePath: ./Dockerfile
     dockerContext: .
     healthCheckPath: /health/live
-    autoDeploy: true
+    # Deploy only after the GitHub CI checks for the commit pass.
+    autoDeployTrigger: checksPass
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
         value: Production
@@ -44,7 +45,8 @@ services:
     dockerfilePath: ./Dockerfile
     dockerContext: .
     healthCheckPath: /about
-    autoDeploy: true
+    # Deploy only after the GitHub CI checks for the commit pass.
+    autoDeployTrigger: checksPass
     domains:
       - desiredicecream.redstarvibe.com
     envVars:

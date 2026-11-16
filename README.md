@@ -1,4 +1,6 @@
-# Scoop Factory: Ice Cream Factory Management Platform
+# Desired Ice Cream: Ice Cream Factory Management Platform
+
+[![CI](https://github.com/aarvitechai/IceCreem/actions/workflows/ci.yml/badge.svg)](https://github.com/aarvitechai/IceCreem/actions/workflows/ci.yml)
 
 One platform for an ice cream factory: online shop, wedding and event bookings, orders with live tracking,
 raw material and production, hawker (street vendor) accounts, delivery app and role based dashboards.
@@ -14,7 +16,7 @@ The full product plan is in [docs/PLAN.md](docs/PLAN.md).
 | Auth | JWT access token (15 min, memory only) + rotating refresh token (7 days, httpOnly cookie, hashed in DB) |
 | Realtime | SignalR hub for order status and rider location |
 | Frontend | Next.js 16, React 19, Tailwind CSS 4, Redux Toolkit + RTK Query, React Hook Form + Zod, Swiper, Recharts |
-| Ops | Docker, Nginx, GitHub Actions (build, test, audit, images to GHCR) |
+| Ops | Docker, Nginx, GitHub Actions CI, Render deploys after CI passes |
 
 ## Features
 
@@ -136,8 +138,8 @@ deploy/nginx.conf              Reverse proxy
 |---|---|
 | `feature/*` | One feature per branch, merged into `dev` |
 | `dev` | Integration. CI runs on every push |
-| `staging` | Release candidate. CI publishes `:staging` images |
-| `production` | Live release. CI publishes `:production` images |
+| `staging` | Test site. Deploys to Render after CI passes |
+| `production` | Live site. Deploys to Render after CI passes |
 | `main` | Mirror of production for the default branch |
 
 Promotion flow: `feature/*` to `dev` to `staging` to `production` to `main`.
