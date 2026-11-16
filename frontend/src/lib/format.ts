@@ -3,11 +3,22 @@ const inrShort = new Intl.NumberFormat("en-IN", { style: "currency", currency: "
 
 export const money = (value: number) => (Number.isInteger(value) ? inrShort.format(value) : inr.format(value));
 
+/**
+ * The API stores times in UTC but sends them without a zone ("2026-11-16T10:59:00").
+ * Browsers read that as local time, which shifts every time by the viewer's offset, so mark it as UTC.
+ * Date only values ("2026-11-16") are left alone.
+ */
+export const toDate = (value: string | Date) =>
+  value instanceof Date ? value : new Date(/T\d{2}:\d{2}/.test(value) && !/(Z|[+-]\d{2}:?\d{2})$/.test(value) ? `${value}Z` : value);
+
+// The business runs in India, so every screen shows India time whatever the viewer's device says.
+const TZ = "Asia/Kolkata";
+
 export const date = (value: string | Date) =>
-  new Date(value).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+  toDate(value).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric", timeZone: TZ });
 
 export const dateTime = (value: string | Date) =>
-  new Date(value).toLocaleString("en-IN", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
+  toDate(value).toLocaleString("en-IN", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit", timeZone: TZ });
 
 /** "OutForDelivery" becomes "Out for delivery". */
 export const label = (value: string) =>
