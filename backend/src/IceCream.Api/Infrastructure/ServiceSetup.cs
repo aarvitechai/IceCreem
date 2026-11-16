@@ -61,15 +61,17 @@ public static class ServiceSetup
         services.AddCors(o => o.AddDefaultPolicy(p =>
             p.WithOrigins(origins).AllowAnyHeader().AllowAnyMethod().AllowCredentials()));
 
+        var globalLimit = config.GetValue("RateLimits:GlobalPerMinute", 300);
+        var authLimit = config.GetValue("RateLimits:AuthPerMinute", 10);
         services.AddRateLimiter(o =>
         {
             o.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
             o.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(ctx =>
                 RateLimitPartition.GetFixedWindowLimiter(ClientIp(ctx),
-                    _ => new FixedWindowRateLimiterOptions { PermitLimit = 300, Window = TimeSpan.FromMinutes(1) }));
+                    _ => new FixedWindowRateLimiterOptions { PermitLimit = globalLimit, Window = TimeSpan.FromMinutes(1) }));
             o.AddPolicy(RateLimits.Auth, ctx =>
                 RateLimitPartition.GetFixedWindowLimiter(ClientIp(ctx),
-                    _ => new FixedWindowRateLimiterOptions { PermitLimit = 10, Window = TimeSpan.FromMinutes(1) }));
+                    _ => new FixedWindowRateLimiterOptions { PermitLimit = authLimit, Window = TimeSpan.FromMinutes(1) }));
         });
 
         AddAuth(services, config);
