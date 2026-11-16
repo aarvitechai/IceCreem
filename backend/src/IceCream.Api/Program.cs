@@ -39,6 +39,7 @@ app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseRateLimiter();
+app.UseOutputCache();
 
 app.MapControllers();
 app.MapHub<OrdersHub>(OrdersHub.Path);
