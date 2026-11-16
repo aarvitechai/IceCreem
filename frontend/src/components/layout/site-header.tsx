@@ -13,7 +13,7 @@ import { brand } from "@/lib/brand";
 
 const links = [
   { href: "/products", label: "Shop" },
-  { href: "/wedding", label: "Weddings" },
+  { href: "/events", label: "Events" },
   { href: "/partner", label: "Franchise" },
   { href: "/track", label: "Track Order" },
   { href: "/about", label: "About" },

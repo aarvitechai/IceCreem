@@ -186,4 +186,18 @@ public sealed class ApiTests(ApiFactory factory) : IClassFixture<ApiFactory>
         var res = await customer.GetAsync("/api/v1/dashboard/admin/analytics");
         Assert.Equal(HttpStatusCode.Forbidden, res.StatusCode);
     }
+
+    [Fact]
+    public async Task Small_birthday_enquiry_is_accepted()
+    {
+        var later = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(20)).ToString("yyyy-MM-dd");
+        var res = await factory.CreateClient().PostAsJsonAsync("/api/v1/bookings", new
+        {
+            contactName = "Test Parent", mobile = "9876543210", eventType = "Birthday", eventDate = later,
+            venueName = "Home", venueAddress = "12 Park Road, Lucknow", guestCount = 30
+        });
+
+        Assert.Equal(HttpStatusCode.Created, res.StatusCode);
+        Assert.Equal("Birthday", (await res.DataAsync()).GetProperty("eventType").GetString());
+    }
 }

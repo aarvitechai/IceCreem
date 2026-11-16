@@ -14,12 +14,14 @@ import { date as fmtDate, money } from "@/lib/format";
 import type { Booking, WeddingPackage } from "@/lib/types";
 import { errorMessage } from "@/store/api";
 import { useAppSelector } from "@/store/store";
+import { eventTypeOptions, occasionByType } from "@/lib/occasions";
+import type { EventType } from "@/lib/types";
 
 const schema = z.object({
   eventDate: z.string().min(1, "Pick a date"),
-  eventType: z.enum(["Wedding", "Reception", "Party"]),
+  eventType: z.enum(eventTypeOptions.map((o) => o.value) as [EventType, ...EventType[]]),
   eventTimeSlot: z.string().max(40).optional(),
-  guestCount: z.coerce.number<number>().int().min(50, "Minimum 50 guests").max(5000),
+  guestCount: z.coerce.number<number>().int().min(25, "Minimum 25 guests").max(5000),
   venueName: z.string().trim().min(2, "Enter venue name").max(150),
   venueAddress: z.string().trim().min(5, "Enter venue address").max(500),
   packageId: z.coerce.number<number>().nullable(),
@@ -40,10 +42,12 @@ export function BookingWizard({ packages }: { packages: WeddingPackage[] }) {
   const [done, setDone] = useState<Booking | null>(null);
   const [create, { isLoading }] = useCreateBookingMutation();
   const preset = Number(params.get("package")) || null;
+  // /wedding/book?event=Birthday opens the form with that occasion picked.
+  const presetEvent = occasionByType(params.get("event") ?? "") ?? occasionByType("Wedding")!;
 
   const { register, control, handleSubmit, setValue, trigger, reset, formState: { errors } } = useForm<Values>({
     resolver: zodResolver(schema),
-    defaultValues: { eventType: "Wedding", guestCount: 200, packageId: preset, eventDate: "", contactName: "", mobile: "", email: "", venueName: "", venueAddress: "" },
+    defaultValues: { eventType: presetEvent.eventType, guestCount: presetEvent.defaultGuests, packageId: preset, eventDate: "", contactName: "", mobile: "", email: "", venueName: "", venueAddress: "" },
   });
 
   useEffect(() => {
@@ -110,7 +114,7 @@ export function BookingWizard({ packages }: { packages: WeddingPackage[] }) {
             <h2 className="font-display text-2xl font-semibold uppercase tracking-wide">Tell us about the event</h2>
             <div className="grid gap-4 sm:grid-cols-2">
               <SelectField label="Event type" {...register("eventType")}>
-                <option>Wedding</option><option>Reception</option><option>Party</option>
+                {eventTypeOptions.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
               </SelectField>
               <SelectField label="Serving time" {...register("eventTimeSlot")}>
                 <option value="">Not sure yet</option>
@@ -119,7 +123,7 @@ export function BookingWizard({ packages }: { packages: WeddingPackage[] }) {
                 <option>Late night (9 pm to 1 am)</option>
               </SelectField>
             </div>
-            <TextField label="Number of guests" type="number" min={50} {...register("guestCount")} error={errors.guestCount?.message} />
+            <TextField label="Number of guests" type="number" min={25} {...register("guestCount")} error={errors.guestCount?.message} />
             <TextField label="Venue name" {...register("venueName")} error={errors.venueName?.message} />
             <TextArea label="Venue address" {...register("venueAddress")} error={errors.venueAddress?.message} />
           </div>
@@ -169,7 +173,7 @@ export function BookingWizard({ packages }: { packages: WeddingPackage[] }) {
         <h3 className="font-display text-xl font-semibold uppercase tracking-wide">Summary</h3>
         <dl className="space-y-2 text-sm">
           <Item label="Date" value={values.eventDate ? fmtDate(values.eventDate) : "Not picked"} />
-          <Item label="Event" value={values.eventType} />
+          <Item label="Event" value={eventTypeOptions.find((o) => o.value === values.eventType)?.label ?? values.eventType} />
           <Item label="Guests" value={String(values.guestCount || "-")} />
           <Item label="Package" value={pkg?.name ?? "Custom"} />
         </dl>
