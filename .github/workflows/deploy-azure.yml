@@ -1,12 +1,9 @@
 name: Deploy to Azure
 
-# Off until you connect Azure. Setup steps: docs/deploy-azure.md, section "Automatic deploys".
-# - Push to staging    -> deploys the staging environment
-# - Push to production -> deploys the production environment (can require approval)
-# - Or run it by hand from the Actions tab.
+# Manual only, so it never adds a check that Render waits on.
+# Live and test sites deploy on Render after CI passes (docs/deploy-render.md).
+# Use this workflow only if you move to Azure (docs/deploy-azure.md, section "Automatic deploys").
 on:
-  push:
-    branches: [staging, production]
   workflow_dispatch:
     inputs:
       environment:
@@ -20,14 +17,14 @@ permissions:
   contents: read
 
 concurrency:
-  group: deploy-${{ github.event.inputs.environment || github.ref_name }}
+  group: deploy-${{ github.event.inputs.environment }}
   cancel-in-progress: false
 
 jobs:
   deploy:
     if: vars.AZURE_DEPLOY_ENABLED == 'true'
     runs-on: ubuntu-latest
-    environment: ${{ github.event.inputs.environment || github.ref_name }}
+    environment: ${{ github.event.inputs.environment }}
     steps:
       - uses: actions/checkout@v4
 
@@ -39,7 +36,7 @@ jobs:
 
       - name: Deploy
         env:
-          APP_ENV: ${{ github.event.inputs.environment || github.ref_name }}
+          APP_ENV: ${{ github.event.inputs.environment }}
           LOCATION: ${{ vars.AZURE_LOCATION || 'centralindia' }}
           SQL_ADMIN_PASSWORD: ${{ secrets.SQL_ADMIN_PASSWORD }}
           JWT_KEY: ${{ secrets.JWT_KEY }}
