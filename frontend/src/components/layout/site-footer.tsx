@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { brand, telLink, whatsappLink } from "@/lib/brand";
+import { MapPin } from "lucide-react";
+import { addressText, brand, mapsLink, telLink, whatsappLink } from "@/lib/brand";
 import { BrandLogo } from "./brand-logo";
 import { OffersSignup } from "./offers-signup";
 
@@ -47,6 +48,12 @@ export function SiteFooter() {
           <ul className="space-y-2 text-sm text-cream/70">
             <li>{brand.owner}</li>
             <li><a href={telLink} className="font-semibold text-white hover:underline">{brand.phoneDisplay}</a></li>
+            <li>
+              <a href={mapsLink} target="_blank" rel="noreferrer" className="flex items-start gap-1.5 hover:text-white">
+                <MapPin className="mt-0.5 size-4 shrink-0 text-sun" />
+                <address className="not-italic">{addressText}</address>
+              </a>
+            </li>
             <li><a href={whatsappLink()} target="_blank" rel="noreferrer" className="hover:text-white">Chat on WhatsApp</a></li>
           </ul>
         </div>
