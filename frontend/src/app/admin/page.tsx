@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { ArrowRight } from "lucide-react";
 import { RankedBarChart, SalesTrendChart } from "@/components/admin/charts";
 import { EmptyState, PageLoader, StatCard, StatusBadge } from "@/components/ui";
 import {
@@ -23,7 +24,10 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Dashboard</h1>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <h1>Dashboard</h1>
+        <Link href="/admin/analytics" className="btn-primary btn-sm">Full analytics <ArrowRight className="size-4" /></Link>
+      </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard title="Today's revenue" value={money(s.todayRevenue)} hint={`${s.todayOrders} orders today`} tone="berry" />
@@ -33,14 +37,14 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Link href="/admin/inventory" className={`card flex items-center justify-between p-5 ${s.lowStockItems > 0 ? "border-red-200 bg-red-50" : ""}`}>
+        <Link href="/admin/inventory" className={`card flex items-center justify-between p-5 transition hover:-translate-y-0.5 hover:shadow-md ${s.lowStockItems > 0 ? "bg-red-50 ring-red-200" : ""}`}>
           <div>
             <div className="text-sm font-semibold">Low stock alerts</div>
             <div className="text-xs text-choco-light">Raw material or packs below minimum</div>
           </div>
           <span className={`text-2xl font-bold ${s.lowStockItems > 0 ? "text-red-600" : ""}`}>{s.lowStockItems > 0 ? `⚠ ${s.lowStockItems}` : "0"}</span>
         </Link>
-        <Link href="/admin/hawkers" className="card flex items-center justify-between p-5">
+        <Link href="/admin/hawkers" className="card flex items-center justify-between p-5 transition hover:-translate-y-0.5 hover:shadow-md">
           <div>
             <div className="text-sm font-semibold">Hawker outstanding</div>
             <div className="text-xs text-choco-light">Money to collect from street vendors</div>
@@ -51,10 +55,10 @@ export default function DashboardPage() {
 
       <section className="card p-5">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-          <h2 className="font-semibold">Revenue by day</h2>
-          <div className="flex gap-1" role="group" aria-label="Range">
+          <h2 className="font-display text-xl font-semibold uppercase tracking-wide">Revenue by day</h2>
+          <div className="flex gap-1 rounded-full bg-cream p-1" role="group" aria-label="Range">
             {[7, 30, 90].map((d) => (
-              <button key={d} onClick={() => setDays(d)} className={`btn-sm btn ${days === d ? "bg-choco text-white" : "bg-cream text-choco-light"}`}>{d} days</button>
+              <button key={d} onClick={() => setDays(d)} aria-pressed={days === d} className={`rounded-full px-3 py-1 text-xs font-semibold transition ${days === d ? "bg-berry text-white shadow" : "text-choco-light hover:text-berry"}`}>{d} days</button>
             ))}
           </div>
         </div>
@@ -63,12 +67,12 @@ export default function DashboardPage() {
 
       <div className="grid gap-4 lg:grid-cols-2">
         <section className="card p-5">
-          <h2 className="mb-1 font-semibold">Top products</h2>
+          <h2 className="mb-1 font-display text-xl font-semibold uppercase tracking-wide">Top products</h2>
           <p className="mb-4 text-xs text-choco-light">Revenue, last 30 days</p>
           {top?.length ? <RankedBarChart data={top} valueLabel="Revenue" /> : <p className="text-sm text-choco-light">No sales yet.</p>}
         </section>
         <section className="card p-5">
-          <h2 className="mb-1 font-semibold">Sales by category</h2>
+          <h2 className="mb-1 font-display text-xl font-semibold uppercase tracking-wide">Sales by category</h2>
           <p className="mb-4 text-xs text-choco-light">Revenue, last 30 days</p>
           {cats?.length ? <RankedBarChart data={cats} valueLabel="Revenue" /> : <p className="text-sm text-choco-light">No sales yet.</p>}
         </section>
@@ -77,8 +81,8 @@ export default function DashboardPage() {
       <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
         <section className="card overflow-hidden">
           <div className="flex items-center justify-between p-5">
-            <h2 className="font-semibold">Latest orders</h2>
-            <Link href="/admin/orders" className="text-sm font-semibold text-berry">View all</Link>
+            <h2 className="font-display text-xl font-semibold uppercase tracking-wide">Latest orders</h2>
+            <Link href="/admin/orders" className="text-xs font-semibold uppercase tracking-wider text-berry hover:underline">View all</Link>
           </div>
           {recent?.items.length ? (
             <div className="overflow-x-auto">
@@ -99,7 +103,7 @@ export default function DashboardPage() {
           ) : <div className="p-5"><EmptyState title="No orders yet" /></div>}
         </section>
         <section className="card p-5">
-          <h2 className="mb-4 font-semibold">Orders by status (30 days)</h2>
+          <h2 className="mb-4 font-display text-xl font-semibold uppercase tracking-wide">Orders by status (30 days)</h2>
           <ul className="space-y-2">
             {statuses?.map((st) => (
               <li key={st.name} className="flex items-center justify-between text-sm">

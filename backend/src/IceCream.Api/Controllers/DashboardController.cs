@@ -27,6 +27,10 @@ public sealed class DashboardController(DashboardService dashboard) : ApiControl
     public async Task<ActionResult<ApiResponse<IReadOnlyList<NamedValue>>>> CategoryShare(CancellationToken ct) =>
         Success(await dashboard.CategoryShareAsync(ct));
 
+    [HttpGet("analytics")]
+    public async Task<ActionResult<ApiResponse<AnalyticsReport>>> Analytics([FromQuery] int days = 30, CancellationToken ct = default) =>
+        Success(await dashboard.AnalyticsAsync(days, ct));
+
     [HttpGet("order-status")]
     public async Task<ActionResult<ApiResponse<IReadOnlyList<NamedValue>>>> OrderStatus(CancellationToken ct) =>
         Success(await dashboard.OrderStatusAsync(ct));

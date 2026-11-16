@@ -160,4 +160,30 @@ public sealed class ApiTests(ApiFactory factory) : IClassFixture<ApiFactory>
         Assert.Equal(HttpStatusCode.OK, res.StatusCode);
         Assert.True((await res.DataAsync()).GetProperty("lowStockItems").GetInt32() >= 1);
     }
+
+    [Fact]
+    public async Task Analytics_counts_todays_order_and_fills_every_day_and_hour()
+    {
+        var variantId = await VariantIdAsync("classic-vanilla");
+        await factory.CreateClient().PostAsJsonAsync("/api/v1/orders", Order(variantId, 1));
+        var admin = await factory.ClientAsAsync(Admin);
+
+        var res = await admin.GetAsync("/api/v1/dashboard/admin/analytics?days=7");
+
+        Assert.Equal(HttpStatusCode.OK, res.StatusCode);
+        var data = await res.DataAsync();
+        Assert.Equal(7, data.GetProperty("trend").GetArrayLength());
+        Assert.Equal(7, data.GetProperty("weekdays").GetArrayLength());
+        Assert.Equal(24, data.GetProperty("hours").GetArrayLength());
+        Assert.True(data.GetProperty("current").GetProperty("orders").GetInt32() >= 1);
+        Assert.Contains(data.GetProperty("cities").EnumerateArray(), c => c.GetProperty("name").GetString() == "Lucknow");
+    }
+
+    [Fact]
+    public async Task Analytics_is_closed_to_customers()
+    {
+        var customer = await factory.ClientAsAsync(Customer);
+        var res = await customer.GetAsync("/api/v1/dashboard/admin/analytics");
+        Assert.Equal(HttpStatusCode.Forbidden, res.StatusCode);
+    }
 }

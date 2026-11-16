@@ -11,6 +11,14 @@ public sealed record DashboardSummary(
 public sealed record TrendPoint(DateOnly Date, int Orders, decimal Revenue);
 public sealed record NamedValue(string Name, decimal Value, int Count);
 
+/// <summary>Headline numbers for one period. Cancelled and returned orders are left out of money and counts.</summary>
+public sealed record PeriodKpis(decimal Revenue, int Orders, decimal AvgOrderValue, int Customers, int NewCustomers, decimal Discounts, int Cancelled);
+
+public sealed record AnalyticsReport(
+    int Days, PeriodKpis Current, PeriodKpis Previous, IReadOnlyList<TrendPoint> Trend,
+    IReadOnlyList<NamedValue> Weekdays, IReadOnlyList<NamedValue> Hours, IReadOnlyList<NamedValue> Channels,
+    IReadOnlyList<NamedValue> Cities, IReadOnlyList<NamedValue> TopProducts);
+
 /// <summary>Numbers for the admin dashboard. Dates use the factory time zone (India, UTC+5:30).</summary>
 public sealed class DashboardService(IAppDbContext db, IClock clock)
 {
@@ -97,6 +105,91 @@ public sealed class DashboardService(IAppDbContext db, IClock clock)
             .Select(g => new { Status = g.Key, Count = g.Count(), Total = g.Sum(o => o.GrandTotal) })
             .ToListAsync(ct);
         return rows.OrderBy(r => r.Status).Select(r => new NamedValue(r.Status.ToString(), r.Total, r.Count)).ToList();
+    }
+
+    /// <summary>Everything the analytics screen needs for the last <paramref name="days"/> days, compared with the days before.</summary>
+    public async Task<AnalyticsReport> AnalyticsAsync(int days, CancellationToken ct)
+    {
+        days = Math.Clamp(days, 7, 90);
+        var firstDay = clock.Today.AddDays(-(days - 1));
+        var curStart = UtcStartOf(firstDay);
+        var prevStart = UtcStartOf(firstDay.AddDays(-days));
+
+        var rows = await db.Orders.AsNoTracking()
+            .Where(o => o.CreatedAt >= prevStart)
+            .Select(o => new OrderRow(o.CreatedAt, o.GrandTotal, o.DiscountAmount, o.Status, o.CustomerMobile, o.City, o.OrderType))
+            .ToListAsync(ct);
+
+        var current = rows.Where(r => r.CreatedAt >= curStart).ToList();
+        var previous = rows.Where(r => r.CreatedAt < curStart).ToList();
+
+        var kpiNow = await KpisAsync(current, curStart, ct);
+        var kpiBefore = await KpisAsync(previous, prevStart, ct);
+
+        var sold = current.Where(r => r.IsSale).ToList();
+        var ist = sold.Select(r => (Row: r, Local: r.CreatedAt + IstOffset)).ToList();
+
+        var trend = Enumerable.Range(0, days).Select(i => firstDay.AddDays(i))
+            .Select(d =>
+            {
+                var day = ist.Where(x => DateOnly.FromDateTime(x.Local) == d).ToList();
+                return new TrendPoint(d, day.Count, day.Sum(x => x.Row.GrandTotal));
+            }).ToList();
+
+        // Monday first, the way shop owners read a week.
+        DayOfWeek[] week = [DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday, DayOfWeek.Sunday];
+        var weekdays = week.Select(w =>
+        {
+            var g = ist.Where(x => x.Local.DayOfWeek == w).ToList();
+            return new NamedValue(w.ToString()[..3], g.Sum(x => x.Row.GrandTotal), g.Count);
+        }).ToList();
+
+        var hours = Enumerable.Range(0, 24).Select(h =>
+        {
+            var g = ist.Where(x => x.Local.Hour == h).ToList();
+            return new NamedValue($"{h:00}", g.Sum(x => x.Row.GrandTotal), g.Count);
+        }).ToList();
+
+        var channels = sold.GroupBy(r => r.OrderType)
+            .Select(g => new NamedValue(g.Key.ToString(), g.Sum(r => r.GrandTotal), g.Count()))
+            .OrderByDescending(x => x.Value).ToList();
+
+        var cities = sold.GroupBy(r => string.IsNullOrWhiteSpace(r.City) ? "Unknown" : r.City.Trim())
+            .Select(g => new NamedValue(g.Key, g.Sum(r => r.GrandTotal), g.Count()))
+            .OrderByDescending(x => x.Value).Take(8).ToList();
+
+        var top = await SoldItems(curStart)
+            .GroupBy(i => i.ProductName)
+            .Select(g => new { Name = g.Key, Value = g.Sum(i => i.LineTotal), Count = g.Sum(i => i.Quantity) })
+            .OrderByDescending(x => x.Value).Take(8)
+            .ToListAsync(ct);
+
+        return new AnalyticsReport(days, kpiNow, kpiBefore, trend, weekdays, hours, channels, cities,
+            top.Select(t => new NamedValue(t.Name, t.Value, t.Count)).ToList());
+    }
+
+    private async Task<PeriodKpis> KpisAsync(List<OrderRow> period, DateTime periodStart, CancellationToken ct)
+    {
+        var sales = period.Where(r => r.IsSale).ToList();
+        var revenue = sales.Sum(r => r.GrandTotal);
+        var mobiles = sales.Select(r => r.CustomerMobile).Distinct().ToList();
+
+        // A customer is new when this period holds their first ever order.
+        var seenBefore = mobiles.Count == 0
+            ? 0
+            : await db.Orders.AsNoTracking()
+                .Where(o => o.CreatedAt < periodStart && mobiles.Contains(o.CustomerMobile))
+                .Select(o => o.CustomerMobile).Distinct().CountAsync(ct);
+
+        return new PeriodKpis(
+            revenue, sales.Count, sales.Count == 0 ? 0 : Math.Round(revenue / sales.Count, 2),
+            mobiles.Count, mobiles.Count - seenBefore, sales.Sum(r => r.DiscountAmount),
+            period.Count(r => !r.IsSale));
+    }
+
+    private sealed record OrderRow(DateTime CreatedAt, decimal GrandTotal, decimal DiscountAmount, OrderStatus Status, string CustomerMobile, string City, OrderType OrderType)
+    {
+        public bool IsSale => Status != OrderStatus.Cancelled && Status != OrderStatus.Returned;
     }
 
     private IQueryable<Domain.Entities.OrderItem> SoldItems(DateTime since) =>
