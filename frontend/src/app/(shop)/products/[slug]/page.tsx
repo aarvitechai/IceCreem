@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { AddToCart } from "@/components/product/add-to-cart";
 import { ProductGallery } from "@/components/product/product-gallery";
+import { ShareButtons } from "@/components/share/share-buttons";
 import { PageLoader, VegMark } from "@/components/ui";
 import { serverApi } from "@/lib/server-api";
 
@@ -13,7 +14,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const product = await serverApi.product(slug).catch(() => null);
   return product
-    ? { title: product.name, description: product.shortDescription, openGraph: { images: product.images[0]?.imageUrl } }
+    ? { title: product.name, description: product.shortDescription, alternates: { canonical: `/products/${slug}` } }
     : { title: "Product not found" };
 }
 
@@ -55,6 +56,12 @@ async function ProductDetail({ params }: Props) {
           </div>
 
           <AddToCart product={product} />
+
+          <ShareButtons
+            path={`/products/${product.slug}`}
+            title={`${product.name} | Desired Ice Cream`}
+            text={product.shortDescription}
+          />
 
           <div className="card divide-y divide-choco/5">
             <Info title="About">{product.description}</Info>

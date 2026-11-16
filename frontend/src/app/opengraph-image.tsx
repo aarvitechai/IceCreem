@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
 import { brand } from "@/lib/brand";
+import { OgTub } from "@/lib/og-art";
 
 // Preview card for WhatsApp, Facebook and Google when someone shares the site link.
 export const alt = `${brand.name}: fresh ice cream delivered`;
@@ -18,12 +19,8 @@ export default function OpengraphImage() {
             Order: {brand.phoneDisplay}
           </div>
         </div>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: 320 }}>
-          <div style={{ display: "flex" }}>
-            <div style={{ width: 130, height: 130, borderRadius: 999, background: "#f59ab5", marginRight: -30 }} />
-            <div style={{ width: 130, height: 130, borderRadius: 999, background: "#fbe9b7" }} />
-          </div>
-          <div style={{ width: 0, height: 0, borderLeft: "110px solid transparent", borderRight: "110px solid transparent", borderTop: "220px solid #e8b166", marginTop: -40 }} />
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <OgTub />
         </div>
       </div>
     ),
