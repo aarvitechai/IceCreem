@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery, type BaseQueryFn, type FetchArgs, type FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
-import type { ApiResponse, AuthResult } from "@/lib/types";
+import type { ApiResponse } from "@/lib/types";
 import { signedIn, signedOut } from "./authSlice";
+import { refreshSession } from "./session";
 
 interface RootLike {
   auth: { accessToken: string | null };
@@ -16,26 +17,20 @@ const rawBaseQuery = fetchBaseQuery({
   },
 });
 
-// One refresh at a time. Parallel 401s wait for the same refresh call.
-let refreshing: Promise<boolean> | null = null;
-
 /** On 401, refresh the access token once using the httpOnly cookie, then retry. */
 const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (args, api, extra) => {
   let result = await rawBaseQuery(args, api, extra);
   const url = typeof args === "string" ? args : args.url;
 
   if (result.error?.status === 401 && !url.startsWith("/auth/")) {
-    refreshing ??= (async () => {
-      const refresh = await rawBaseQuery({ url: "/auth/refresh", method: "POST" }, api, extra);
-      if (refresh.data) {
-        api.dispatch(signedIn((refresh.data as ApiResponse<AuthResult>).data));
-        return true;
-      }
+    // Shared with the page load refresh, so parallel 401s never send two refresh calls.
+    const session = await refreshSession();
+    if (session) {
+      api.dispatch(signedIn(session));
+      result = await rawBaseQuery(args, api, extra);
+    } else {
       api.dispatch(signedOut());
-      return false;
-    })().finally(() => (refreshing = null));
-
-    if (await refreshing) result = await rawBaseQuery(args, api, extra);
+    }
   }
   return result;
 };

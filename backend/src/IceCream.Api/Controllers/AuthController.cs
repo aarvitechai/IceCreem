@@ -22,8 +22,8 @@ public sealed class AuthController(AuthService auth, IWebHostEnvironment env) : 
     public async Task<ActionResult<ApiResponse<AuthResult>>> Login(LoginRequest request, CancellationToken ct) =>
         Success(WithCookie(await auth.LoginAsync(request, ct)));
 
+    // No tight limit: every page load refreshes, and the token is a long random secret that cannot be guessed.
     [HttpPost("refresh")]
-    [EnableRateLimiting(RateLimits.Auth)]
     public async Task<ActionResult<ApiResponse<AuthResult>>> Refresh(CancellationToken ct)
     {
         try

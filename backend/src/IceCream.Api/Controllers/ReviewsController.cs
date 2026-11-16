@@ -17,7 +17,7 @@ public sealed class ReviewsController(ReviewService reviews) : ApiControllerBase
 
     /// <summary>Anyone can send a review. It shows on the site after an admin approves it.</summary>
     [HttpPost]
-    [EnableRateLimiting(RateLimits.Auth)]
+    [EnableRateLimiting(RateLimits.Submit)]
     public async Task<ActionResult<ApiResponse<bool>>> Submit(ReviewRequest req, CancellationToken ct)
     {
         await reviews.SubmitAsync(req, ct);

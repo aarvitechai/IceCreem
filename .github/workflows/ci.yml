@@ -36,6 +36,36 @@ jobs:
       - name: Vulnerable packages
         run: dotnet list package --vulnerable --include-transitive 2>&1 | tee vuln.txt && ! grep -q "has the following vulnerable packages" vuln.txt
 
+  backend-sqlserver:
+    name: Integration tests on real SQL Server
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    services:
+      sql:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          ACCEPT_EULA: "Y"
+          MSSQL_SA_PASSWORD: Ci_Only_Pass123!
+        ports:
+          - 1433:1433
+        options: >-
+          --health-cmd "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P Ci_Only_Pass123! -C -Q 'SELECT 1' || exit 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      # Same tests as the backend job, but against a real database, so EF's SQL is checked too.
+      ICECREAM_TEST_SQLSERVER: Server=localhost,1433;User Id=sa;Password=Ci_Only_Pass123!;TrustServerCertificate=True
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: backend/global.json
+      - name: Integration tests
+        run: dotnet test tests/IceCream.IntegrationTests -c Release
+
   frontend:
     name: Frontend lint, typecheck and build
     runs-on: ubuntu-latest
@@ -52,6 +82,7 @@ jobs:
       - run: npm ci
       - run: npx eslint src
       - run: npx tsc --noEmit
+      - run: npm test
       - run: npm run build
       - name: Audit production dependencies
         run: npm audit --omit=dev --audit-level=high
