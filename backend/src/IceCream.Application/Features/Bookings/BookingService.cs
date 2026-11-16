@@ -42,7 +42,8 @@ public sealed class BookingRequestValidator : AbstractValidator<BookingRequest>
         RuleFor(x => x.EventType).IsInEnum();
         RuleFor(x => x.VenueName).NotEmpty().MaximumLength(150);
         RuleFor(x => x.VenueAddress).NotEmpty().MaximumLength(500);
-        RuleFor(x => x.GuestCount).InclusiveBetween(50, 5000);
+        // Birthdays and kitty parties are small, so custom quotes start at 25 guests. Packages keep their own minimum.
+        RuleFor(x => x.GuestCount).InclusiveBetween(25, 5000);
         RuleFor(x => x.EventTimeSlot).MaximumLength(40);
         RuleFor(x => x.SpecialRequest).MaximumLength(1000);
     }

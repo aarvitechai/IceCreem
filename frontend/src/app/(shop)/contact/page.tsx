@@ -35,7 +35,7 @@ export default function ContactPage() {
       <div className="grid gap-4 md:grid-cols-3">
         {[
           { href: "/products", icon: ShoppingBag, text: "Order online with home delivery" },
-          { href: "/wedding/book", icon: PartyPopper, text: "Check dates for a wedding or party" },
+          { href: "/events", icon: PartyPopper, text: "Weddings, birthdays and other events" },
           { href: "/partner", icon: Handshake, text: "Franchise and bulk enquiries" },
         ].map(({ href, icon: Icon, text }) => (
           <Link key={href} href={href} className="surface group flex items-center gap-3 p-5 font-medium transition hover:-translate-y-0.5 hover:text-berry hover:shadow-md">

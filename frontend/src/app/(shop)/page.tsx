@@ -8,6 +8,7 @@ import { HeroCarousel } from "@/components/product/hero-carousel";
 import { ProductCard, ProductGridSkeleton } from "@/components/product/product-card";
 import { AppImage } from "@/components/ui";
 import { brand, telLink, whatsappLink } from "@/lib/brand";
+import { occasions } from "@/lib/occasions";
 import { serverApi } from "@/lib/server-api";
 
 // Soft colours behind the round category pictures, one per tile in turn.
@@ -82,13 +83,20 @@ export default function HomePage() {
         <div className="grid items-center gap-8 overflow-hidden rounded-[2rem] bg-gradient-to-br from-pink to-berry p-8 text-white md:grid-cols-2 md:p-12">
           <div className="space-y-4">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-xs font-semibold uppercase tracking-wider">
-              <PartyPopper className="size-3.5" /> Weddings and events
+              <PartyPopper className="size-3.5" /> Weddings, birthdays and every celebration
             </span>
             <h2 className="font-display text-4xl font-bold uppercase leading-tight sm:text-5xl">Live ice cream counters for your big day</h2>
             <p className="text-white/90">Kulfi carts, sundae bars and themed counters with trained staff. Check date availability and get a quote in minutes.</p>
             <div className="flex flex-wrap gap-3">
               <Link href="/wedding/book" className="btn bg-white text-berry-dark hover:bg-cream">Check availability</Link>
               <Link href="/wedding" className="btn border border-white/60 text-white hover:bg-white/10">See packages</Link>
+            </div>
+            <div className="flex flex-wrap gap-2 pt-2">
+              {occasions.filter((o) => o.slug !== "wedding").map((o) => (
+                <Link key={o.slug} href={`/events/${o.slug}`} className="rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wider hover:bg-white/30">
+                  {o.short}
+                </Link>
+              ))}
             </div>
           </div>
           <div className="relative mx-auto aspect-square w-full max-w-xs">
