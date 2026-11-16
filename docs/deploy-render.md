@@ -16,7 +16,7 @@ flowchart LR
     CF --> WEB["Render: desiredicecream-web<br/>Next.js"]
     WEB -- "/api, /hubs, /uploads<br/>(proxied)" --> API["Render: desiredicecream-api<br/>.NET 10"]
     API -- "SSL" --> DB[("Neon<br/>PostgreSQL")]
-    GH["GitHub<br/>staging branch"] -. "auto deploy on push" .-> WEB
+    GH["GitHub<br/>production branch"] -. "auto deploy on push" .-> WEB
     GH -. "auto deploy on push" .-> API
 ```
 
@@ -83,7 +83,7 @@ Go to https://render.com → **Get Started** → **Sign up with GitHub**. No car
 
 1. In Render: **+ New → Blueprint**.
 2. **Connect GitHub**. If `aarvitechai/IceCreem` is not listed, click **Configure GitHub** and give Render access to it.
-3. Choose the repository, branch **`staging`**, Blueprint name `desired-ice-cream`.
+3. Choose the repository, branch **`production`**, Blueprint name `desired-ice-cream`.
 4. Render lists two services: `desiredicecream-api` and `desiredicecream-web`.
 5. Render asks for two values:
 
@@ -141,7 +141,7 @@ If the record pointed to a Cloudflare Tunnel before, edit it; do not add a secon
 
 ## Updating the site
 
-Every push to the `staging` branch redeploys both services automatically.
+Every push to the `production` branch redeploys both services automatically. Test changes on `staging` first, then promote them to `production`.
 New database migrations run when the API starts.
 
 ## Backups
