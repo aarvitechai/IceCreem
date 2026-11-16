@@ -165,9 +165,58 @@ Test site web settings that differ from live: `API_INTERNAL_URL` points to the s
 
 Render free plans allow 2 custom domains per workspace without a payment method.
 
-## Updating the site
+## CI/CD: push, test, deploy
 
-Every push to the `production` branch redeploys both services automatically. Test changes on `staging` first, then promote them to `production`.
+Every push is tested by GitHub Actions. Render deploys only when those tests pass
+(Render setting **Auto-Deploy: After CI checks pass**, `autoDeployTrigger: checksPass` in `render.yaml`).
+
+```mermaid
+flowchart LR
+    C["git push"] --> CI{"GitHub Actions CI<br/>backend tests<br/>frontend lint, types, build<br/>security audit"}
+    CI -- "fail" --> X["No deploy<br/>site stays on last good version"]
+    CI -- "pass on staging" --> T["Render deploys<br/>test site"]
+    CI -- "pass on production" --> L["Render deploys<br/>live site"]
+```
+
+| You push to | CI runs | If CI passes | Site |
+|---|---|---|---|
+| `feature/*` (pull request) | Yes | Nothing deploys | none |
+| `dev` | Yes | Nothing deploys | none |
+| `staging` | Yes | Render deploys | test-desiredicecream.redstarvibe.com |
+| `production` | Yes | Render deploys | desiredicecream.redstarvibe.com |
+
+What the checks cover (`.github/workflows/ci.yml`):
+
+| Job | Steps |
+|---|---|
+| Backend | restore, build (warnings are errors), unit and integration tests, vulnerable package check |
+| Frontend | install, ESLint, TypeScript, production build, `npm audit` for high severity issues |
+
+### Daily release flow
+
+```bash
+git checkout dev && git pull
+git checkout -b feature/my-change
+# ...work, commit...
+git push -u origin feature/my-change      # open a pull request into dev, CI runs
+
+# after merge into dev:
+git checkout staging && git pull && git merge dev && git push      # CI, then test site updates
+# check the test site, then:
+git checkout production && git pull && git merge staging && git push   # CI, then live site updates
+```
+
+A deploy takes about 5 minutes for CI plus about 8 minutes for Render.
+Watch CI in GitHub **Actions** and the deploy in Render **Events**.
+
+### If something breaks
+
+| Situation | What to do |
+|---|---|
+| CI failed | Open the failed run in GitHub Actions, fix, push again. The site keeps the last good version |
+| Deploy failed on Render | Render keeps the previous version live. Read Render **Logs**, fix, push again |
+| Bad version went live | Render → service → **Events** → previous deploy → **Rollback** |
+
 New database migrations run when the API starts.
 
 ## Backups

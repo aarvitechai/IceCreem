@@ -682,10 +682,11 @@ The workflow [`.github/workflows/deploy-azure.yml`](../.github/workflows/deploy-
 
 | Event | Result |
 |---|---|
-| Push to `staging` | Deploys staging |
-| Push to `production` | Deploys production (you can require an approval) |
 | Actions tab, "Run workflow" | Deploys the environment you pick |
 
+It is manual only today, because the live and test sites run on Render (see deploy-render.md).
+To deploy Azure on every push, add `push: branches: [staging, production]` under `on:` in the workflow
+and use `${{ github.event.inputs.environment || github.ref_name }}` for the environment.
 It stays **off** until you finish the steps below.
 
 ```mermaid
