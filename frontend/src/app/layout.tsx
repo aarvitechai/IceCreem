@@ -7,7 +7,7 @@ import "./globals.css";
 const heading = Oswald({ subsets: ["latin"], variable: "--font-heading", weight: ["500", "600", "700"] });
 const body = Poppins({ subsets: ["latin"], variable: "--font-body", weight: ["400", "500", "600", "700"] });
 
-const description = `${brand.name}: fresh ice cream tubs, cones, kulfi and family packs with home delivery. Live counters and kulfi carts for weddings and parties. Call ${brand.phoneDisplay}.`;
+const description = `${brand.name}, ${brand.address.city}: fresh ice cream tubs, cones, kulfi and family packs with home delivery. Live counters and kulfi carts for weddings and parties. Call ${brand.phoneDisplay}.`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(brand.siteUrl),
@@ -31,6 +31,14 @@ const localBusiness = {
   url: brand.siteUrl,
   telephone: brand.phoneE164,
   founder: { "@type": "Person", name: brand.owner },
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: brand.address.area,
+    addressLocality: brand.address.city,
+    addressRegion: brand.address.region,
+    addressCountry: brand.address.country,
+  },
+  areaServed: brand.address.city,
   priceRange: "₹",
   servesCuisine: "Ice cream, Kulfi",
 };
