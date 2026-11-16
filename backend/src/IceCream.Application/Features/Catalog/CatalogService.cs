@@ -9,7 +9,8 @@ public sealed record CategoryDto(long Id, string Name, string Slug, string? Imag
 
 public sealed record ProductCardDto(
     long Id, string Name, string Slug, string ShortDescription, string CategoryName, string CategorySlug,
-    string? ImageUrl, bool IsVeg, bool IsFeatured, decimal Price, decimal Mrp, bool InStock);
+    string? ImageUrl, bool IsVeg, bool IsFeatured, decimal Price, decimal Mrp, bool InStock,
+    long? QuickVariantId, string? QuickVariantName, decimal QuickVariantPrice, int QuickVariantAvailable);
 
 public sealed record VariantDto(long Id, string Sku, string Name, decimal Mrp, decimal SellingPrice, int AvailableQty);
 public sealed record ImageDto(long Id, string ImageUrl, string? AltText, bool IsPrimary);
@@ -63,6 +64,11 @@ public sealed class CatalogService(IAppDbContext db)
             Price = p.Variants.Where(v => v.IsActive && !v.IsDeleted).Min(v => v.SellingPrice),
             Mrp = p.Variants.Where(v => v.IsActive && !v.IsDeleted).Min(v => v.Mrp),
             InStock = p.Variants.Any(v => v.IsActive && !v.IsDeleted && v.StockQty - v.ReservedQty > 0),
+            // Pack used by the card's quick add button: cheapest one that is in stock.
+            Quick = p.Variants.Where(v => v.IsActive && !v.IsDeleted)
+                .OrderByDescending(v => v.StockQty - v.ReservedQty > 0).ThenBy(v => v.SellingPrice)
+                .Select(v => new { v.Id, v.Name, v.SellingPrice, Available = v.StockQty - v.ReservedQty })
+                .FirstOrDefault(),
             Image = p.Images.Where(i => !i.IsDeleted).OrderByDescending(i => i.IsPrimary).ThenBy(i => i.SortOrder)
                 .Select(i => i.ImageUrl).FirstOrDefault()
         });
@@ -81,7 +87,9 @@ public sealed class CatalogService(IAppDbContext db)
 
         return await cards
             .Select(x => new ProductCardDto(x.p.Id, x.p.Name, x.p.Slug, x.p.ShortDescription, x.p.Category!.Name,
-                x.p.Category.Slug, x.Image, x.p.IsVeg, x.p.IsFeatured, x.Price, x.Mrp, x.InStock))
+                x.p.Category.Slug, x.Image, x.p.IsVeg, x.p.IsFeatured, x.Price, x.Mrp, x.InStock,
+                x.Quick == null ? null : x.Quick.Id, x.Quick == null ? null : x.Quick.Name,
+                x.Quick == null ? 0 : x.Quick.SellingPrice, x.Quick == null ? 0 : Math.Max(0, x.Quick.Available)))
             .ToPagedAsync(q, ct);
     }
 

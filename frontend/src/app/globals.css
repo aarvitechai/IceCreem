@@ -2,13 +2,16 @@
 
 /* Brand tokens. Change here to re-theme the whole app. */
 @theme {
-  --color-cream: #fff8f0;
-  --color-cream-dark: #fbead8;
-  --color-berry: #d63a6e;
-  --color-berry-dark: #b02a58;
-  --color-berry-light: #fde4ec;
-  --color-choco: #3b2418;
-  --color-choco-light: #6b4a3a;
+  --color-cream: #fffbef;
+  --color-cream-dark: #fbeed3;
+  --color-berry: #e3504f;
+  --color-berry-dark: #c63d3d;
+  --color-berry-light: #fde3e1;
+  --color-pink: #eb558f;
+  --color-pink-light: #fde6ef;
+  --color-sun: #fbcd0a;
+  --color-choco: #2a1f1d;
+  --color-choco-light: #5c4b47;
   --color-mint: #2fa58b;
   --color-mint-light: #dff5ef;
   --color-mango: #f4a51c;
@@ -34,6 +37,7 @@ h2,
 h3,
 h4 {
   font-family: var(--font-display);
+  letter-spacing: 0.01em;
 }
 
 /* Shared building blocks. @utility lets them be combined and used with variants. */
@@ -41,7 +45,7 @@ h4 {
   @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
 }
 @utility btn {
-  @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60;
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold uppercase tracking-wide transition active:scale-95 disabled:cursor-not-allowed disabled:opacity-60;
 }
 @utility btn-primary {
   @apply btn bg-berry text-white shadow-sm hover:bg-berry-dark;
@@ -54,6 +58,10 @@ h4 {
 }
 @utility btn-sm {
   @apply px-3 py-1.5 text-xs;
+}
+/* Big uppercase section heading with a small wavy underline. */
+@utility section-title {
+  @apply font-display text-3xl font-bold uppercase tracking-wide text-choco sm:text-4xl;
 }
 @utility card {
   @apply rounded-2xl border border-choco/10 bg-white shadow-sm;
@@ -113,9 +121,12 @@ h4 {
     animation-delay: 0.3s;
   }
 
-  /* Flavour ticker. */
+  /* Offer strip and flavour ticker. */
   .marquee-track {
     animation: marquee 32s linear infinite;
+  }
+  .announce-track {
+    animation: marquee 28s linear infinite;
   }
   .marquee:hover .marquee-track {
     animation-play-state: paused;
@@ -149,4 +160,11 @@ h4 {
 
 .marquee {
   mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+
+/* Wavy line under section headings. */
+.wave {
+  height: 10px;
+  width: 96px;
+  background: radial-gradient(circle at 5px -1px, transparent 5px, var(--color-berry) 5.5px 7px, transparent 7.5px) 0 0 / 14px 10px repeat-x;
 }
