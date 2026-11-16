@@ -113,7 +113,7 @@ async function Hero() {
 async function Categories() {
   const categories = (await serverApi.categories()) ?? [];
   return (
-    <div className="-mx-4 flex snap-x gap-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 lg:grid-cols-5">
+    <div className="-mx-4 flex snap-x gap-4 overflow-x-auto px-4 pb-2 [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 lg:grid-cols-5">
       {categories.map((c) => (
         <Link key={c.id} href={`/products?category=${c.slug}`} className="card group w-40 shrink-0 snap-start overflow-hidden text-center transition hover:-translate-y-1 sm:w-auto">
           <div className="relative aspect-square bg-cream-dark">
