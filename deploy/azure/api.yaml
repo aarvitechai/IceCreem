@@ -1,0 +1,73 @@
+# Container App definition for the API. Values in ${...} are filled by deploy.sh (envsubst).
+# Defined in YAML because the uploads volume cannot be set with plain CLI flags.
+location: ${LOCATION}
+type: Microsoft.App/containerApps
+properties:
+  managedEnvironmentId: ${ENV_ID}
+  configuration:
+    activeRevisionsMode: Single
+    ingress:
+      external: false
+      allowInsecure: true
+      targetPort: 8080
+      transport: auto
+    registries:
+      - server: ${ACR_SERVER}
+        username: ${ACR_USER}
+        passwordSecretRef: acr-password
+    secrets:
+      - name: acr-password
+        value: "${ACR_PASSWORD}"
+      - name: db-connection
+        value: "${DB_CONNECTION}"
+      - name: jwt-key
+        value: "${JWT_KEY}"
+      - name: seed-password
+        value: "${SEED_PASSWORD}"
+  template:
+    containers:
+      - name: api
+        image: ${ACR_SERVER}/icecream-api:${TAG}
+        resources:
+          cpu: 0.5
+          memory: 1Gi
+        env:
+          - name: ASPNETCORE_ENVIRONMENT
+            value: Production
+          - name: ConnectionStrings__Default
+            secretRef: db-connection
+          - name: Jwt__Key
+            secretRef: jwt-key
+          - name: Seed__DefaultPassword
+            secretRef: seed-password
+          - name: Database__MigrateOnStartup
+            value: "true"
+          - name: Api__EnableDocs
+            value: "${API_DOCS}"
+        probes:
+          - type: Liveness
+            httpGet:
+              path: /health/live
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          - type: Readiness
+            httpGet:
+              path: /health/ready
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 15
+        volumeMounts:
+          - volumeName: uploads
+            mountPath: /app/wwwroot/uploads
+    # One replica: SignalR keeps live connections in memory and migrations run on start.
+    # Add an Azure SignalR Service or Redis backplane before raising this.
+    scale:
+      minReplicas: 1
+      maxReplicas: 1
+    volumes:
+      - name: uploads
+        storageType: AzureFile
+        storageName: uploads
+        # 1654 is the non root "app" user inside the .NET image.
+        mountOptions: uid=1654,gid=1654,dir_mode=0755,file_mode=0644
