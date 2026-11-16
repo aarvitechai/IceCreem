@@ -8,11 +8,20 @@ export const brand = {
   phoneDisplay: "+91 78608 27264",
   phoneE164: "+917860827264",
   whatsapp: "917860827264",
+  address: {
+    area: "Bhopapur, Premnagar",
+    city: "Varanasi",
+    region: "Uttar Pradesh",
+    country: "IN",
+  },
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "https://desiredicecream.redstarvibe.com",
 } as const;
 
 /** True on test sites (staging): search engines are told not to index them. */
 export const noIndex = process.env.NEXT_PUBLIC_NOINDEX === "true";
+
+export const addressText = `${brand.address.area}, ${brand.address.city}`;
+export const mapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${addressText}, ${brand.address.region}`)}`;
 
 export const telLink = `tel:${brand.phoneE164}`;
 export const whatsappLink = (text = `Hi ${brand.name}, I want to place an order.`) =>

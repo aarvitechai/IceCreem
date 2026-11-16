@@ -11,10 +11,12 @@ import { useAppSelector } from "@/store/store";
 import { BrandLogo } from "./brand-logo";
 import { brand } from "@/lib/brand";
 
-const links = [
+// wideOnly links show in the desktop bar from 1280px (they always show in the phone menu).
+const links: { href: string; label: string; wideOnly?: boolean }[] = [
   { href: "/products", label: "Shop" },
   { href: "/events", label: "Events" },
   { href: "/gallery", label: "Gallery" },
+  { href: "/blog", label: "Blog", wideOnly: true },
   { href: "/partner", label: "Franchise" },
   { href: "/track", label: "Track Order" },
   { href: "/about", label: "About" },
@@ -68,7 +70,7 @@ export function SiteHeader() {
             <Link
               key={l.href}
               href={l.href}
-              className={`whitespace-nowrap rounded-full px-2 py-2 font-display xl:px-3 text-base font-medium uppercase tracking-wider transition hover:text-berry ${pathname.startsWith(l.href) ? "text-berry" : "text-choco"}`}
+              className={`${l.wideOnly ? "hidden xl:block " : ""}whitespace-nowrap rounded-full px-2 py-2 font-display xl:px-3 text-base font-medium uppercase tracking-wider transition hover:text-berry ${pathname.startsWith(l.href) ? "text-berry" : "text-choco"}`}
             >
               {l.label}
             </Link>
