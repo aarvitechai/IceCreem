@@ -1,15 +1,24 @@
 "use client";
 
 import Link from "next/link";
+import { Suspense } from "react";
 import { useState } from "react";
 import { Minus, Plus, Trash2 } from "lucide-react";
-import { AppImage, EmptyState, Spinner } from "@/components/ui";
+import { AppImage, EmptyState, PageLoader, Spinner } from "@/components/ui";
 import { useCheckoutSummaryQuery } from "@/features/orders/api";
 import { money } from "@/lib/format";
 import { removeItem, setCoupon, setQuantity } from "@/store/cartSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 
 export default function CartPage() {
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <CartContent />
+    </Suspense>
+  );
+}
+
+function CartContent() {
   const dispatch = useAppDispatch();
   const { items, couponCode } = useAppSelector((s) => s.cart);
   const [code, setCode] = useState(couponCode ?? "");

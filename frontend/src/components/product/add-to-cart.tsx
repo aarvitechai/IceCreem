@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Minus, Plus, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
@@ -11,6 +12,7 @@ import { useAppDispatch } from "@/store/store";
 
 export function AddToCart({ product }: { product: ProductDetail }) {
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const firstInStock = product.variants.find((v) => v.availableQty > 0) ?? product.variants[0];
   const [variantId, setVariantId] = useState(firstInStock?.id);
   const [qty, setQty] = useState(1);
@@ -31,7 +33,7 @@ export function AddToCart({ product }: { product: ProductDetail }) {
       imageUrl: product.images[0]?.imageUrl ?? null,
       quantity: qty,
     }));
-    toast.success(`${product.name} added to cart`, { action: { label: "View cart", onClick: () => (window.location.href = "/cart") } });
+    toast.success(`${product.name} added to cart`, { action: { label: "View cart", onClick: () => router.push("/cart") } });
   };
 
   return (

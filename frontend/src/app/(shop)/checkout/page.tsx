@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import { EmptyState, Spinner, TextArea, TextField } from "@/components/ui";
+import { EmptyState, PageLoader, Spinner, TextArea, TextField } from "@/components/ui";
 import { useCheckoutSummaryQuery, usePlaceOrderMutation } from "@/features/orders/api";
 import { money } from "@/lib/format";
 import { errorMessage } from "@/store/api";
@@ -27,6 +27,14 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>;
 
 export default function CheckoutPage() {
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <CheckoutContent />
+    </Suspense>
+  );
+}
+
+function CheckoutContent() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { items, couponCode } = useAppSelector((s) => s.cart);

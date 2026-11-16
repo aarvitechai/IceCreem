@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
@@ -41,7 +41,7 @@ export function BookingWizard({ packages }: { packages: WeddingPackage[] }) {
   const [create, { isLoading }] = useCreateBookingMutation();
   const preset = Number(params.get("package")) || null;
 
-  const { register, handleSubmit, setValue, watch, trigger, reset, formState: { errors } } = useForm<Values>({
+  const { register, control, handleSubmit, setValue, trigger, reset, formState: { errors } } = useForm<Values>({
     resolver: zodResolver(schema),
     defaultValues: { eventType: "Wedding", guestCount: 200, packageId: preset, eventDate: "", contactName: "", mobile: "", email: "", venueName: "", venueAddress: "" },
   });
@@ -50,7 +50,8 @@ export function BookingWizard({ packages }: { packages: WeddingPackage[] }) {
     if (user) reset((v) => ({ ...v, contactName: v.contactName || user.fullName, mobile: v.mobile || user.mobile, email: v.email || user.email }));
   }, [user, reset]);
 
-  const values = watch();
+  const [eventDate, eventType, guestCount, packageId] = useWatch({ control, name: ["eventDate", "eventType", "guestCount", "packageId"] });
+  const values = { eventDate, eventType, guestCount, packageId };
   const pkg = packages.find((p) => p.id === Number(values.packageId));
   const estimate = pkg ? pkg.pricePerHead * (Number(values.guestCount) || 0) : 0;
 
