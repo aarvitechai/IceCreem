@@ -45,7 +45,7 @@ function CheckoutContent() {
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { customerName: "", mobile: "", email: "", addressLine: "", city: "Lucknow", pincode: "", notes: "" },
+    defaultValues: { customerName: "", mobile: "", email: "", addressLine: "", city: "", pincode: "", notes: "" },
   });
 
   useEffect(() => {
