@@ -52,8 +52,8 @@ public sealed class CatalogService(IAppDbContext db)
         if (!string.IsNullOrWhiteSpace(q.Category)) query = query.Where(p => p.Category!.Slug == q.Category);
         if (!string.IsNullOrWhiteSpace(q.Search))
         {
-            var s = q.Search.Trim();
-            query = query.Where(p => p.Name.Contains(s) || p.ShortDescription.Contains(s));
+            var s = q.Search.Trim().ToLowerInvariant();
+            query = query.Where(p => p.Name.ToLower().Contains(s) || p.ShortDescription.ToLower().Contains(s));
         }
         if (q.IsVeg.HasValue) query = query.Where(p => p.IsVeg == q.IsVeg);
 

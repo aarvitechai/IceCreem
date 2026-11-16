@@ -156,8 +156,8 @@ public sealed class BookingService(IAppDbContext db, ICurrentUser currentUser, I
         if (q.To.HasValue) query = query.Where(b => b.EventDate <= q.To);
         if (!string.IsNullOrWhiteSpace(q.Search))
         {
-            var s = q.Search.Trim();
-            query = query.Where(b => b.BookingNumber.Contains(s) || b.ContactName.Contains(s) || b.Mobile.Contains(s) || b.VenueName.Contains(s));
+            var s = q.Search.Trim().ToLowerInvariant();
+            query = query.Where(b => b.BookingNumber.ToLower().Contains(s) || b.ContactName.ToLower().Contains(s) || b.Mobile.ToLower().Contains(s) || b.VenueName.ToLower().Contains(s));
         }
 
         var result = await query.OrderBy(b => b.EventDate).ToPagedAsync(q, ct);
