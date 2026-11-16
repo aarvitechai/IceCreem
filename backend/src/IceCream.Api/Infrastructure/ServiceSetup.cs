@@ -18,6 +18,12 @@ public static class RateLimits
     public const string Auth = "auth";
 }
 
+public static class CachePolicies
+{
+    public const string Catalog = "catalog";
+    public const string CatalogTag = "catalog";
+}
+
 public static class ServiceSetup
 {
     public static IServiceCollection AddApi(this IServiceCollection services, IConfiguration config)
@@ -36,6 +42,10 @@ public static class ServiceSetup
         services.AddProblemDetails();
         services.AddOpenApi();
         services.AddSignalR();
+        services.AddOutputCache(o => o.AddPolicy(CachePolicies.Catalog, p => p
+            .Expire(TimeSpan.FromSeconds(60))
+            .SetVaryByQuery("*")
+            .Tag(CachePolicies.CatalogTag)));
         services.AddSingleton<IRealtimeNotifier, SignalRNotifier>();
 
         services.AddHealthChecks().AddDbContextCheck<AppDbContext>("database", tags: ["ready"]);
