@@ -21,7 +21,9 @@ public static class DependencyInjection
         {
             var conn = config.GetConnectionString("Default")
                 ?? throw new InvalidOperationException("ConnectionStrings:Default is missing.");
-            options.UseSqlServer(conn, sql => sql.EnableRetryOnFailure(3));
+            options.UseSqlServer(conn, sql => sql
+                .EnableRetryOnFailure(3)
+                .UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
             options.AddInterceptors(sp.GetRequiredService<AuditInterceptor>());
         });
         services.AddScoped<IAppDbContext>(sp => sp.GetRequiredService<AppDbContext>());
