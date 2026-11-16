@@ -1,11 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { Fredoka, Inter } from "next/font/google";
+import { Oswald, Poppins } from "next/font/google";
 import { Providers } from "@/components/providers";
 import { brand, noIndex } from "@/lib/brand";
 import "./globals.css";
 
-const heading = Fredoka({ subsets: ["latin"], variable: "--font-heading", weight: ["500", "600", "700"] });
-const body = Inter({ subsets: ["latin"], variable: "--font-body" });
+const heading = Oswald({ subsets: ["latin"], variable: "--font-heading", weight: ["500", "600", "700"] });
+const body = Poppins({ subsets: ["latin"], variable: "--font-body", weight: ["400", "500", "600", "700"] });
 
 const description = `${brand.name}: fresh ice cream tubs, cones, kulfi and family packs with home delivery. Live counters and kulfi carts for weddings and parties. Call ${brand.phoneDisplay}.`;
 
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   robots: noIndex ? { index: false, follow: false } : undefined,
 };
 
-export const viewport: Viewport = { themeColor: "#d63a6e" };
+export const viewport: Viewport = { themeColor: "#e3504f" };
 
 // Tells search engines who we are and how to call us.
 const localBusiness = {

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import { LayoutDashboard, LogOut, Menu, ShoppingBag, User, X } from "lucide-react";
+import { LayoutDashboard, LogOut, Menu, Search, ShoppingBag, User, X } from "lucide-react";
 import { useLogoutMutation } from "@/features/auth/api";
 import { homeFor } from "@/lib/roles";
 import { useAppSelector } from "@/store/store";
@@ -11,8 +11,8 @@ import { BrandLogo } from "./brand-logo";
 import { brand } from "@/lib/brand";
 
 const links = [
-  { href: "/products", label: "Ice Creams" },
-  { href: "/wedding", label: "Weddings and Events" },
+  { href: "/products", label: "Shop" },
+  { href: "/wedding", label: "Weddings" },
   { href: "/track", label: "Track Order" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
@@ -26,13 +26,27 @@ export function SiteHeader() {
   const count = useAppSelector((s) => s.cart.items.reduce((n, i) => n + i.quantity, 0));
   const [logout] = useLogoutMutation();
 
+  const search = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const q = new FormData(e.currentTarget).get("q")?.toString().trim();
+    setOpen(false);
+    router.push(q ? `/products?search=${encodeURIComponent(q)}` : "/products");
+  };
+
+  const searchBox = (className: string) => (
+    <form onSubmit={search} role="search" className={className}>
+      <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-choco/40" />
+      <input name="q" type="search" placeholder="Search flavours" aria-label="Search ice creams" className="input rounded-full py-2 pl-9" />
+    </form>
+  );
+
   const signOut = async () => {
     await logout();
     router.push("/");
   };
 
   return (
-    <header className="sticky top-0 z-40 border-b border-choco/10 bg-cream/90 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-choco/10 bg-white/95 backdrop-blur">
       <div className="container-page flex h-16 items-center gap-4">
         <button className="btn-ghost btn-sm md:hidden" onClick={() => setOpen((o) => !o)} aria-label="Menu">
           {open ? <X className="size-5" /> : <Menu className="size-5" />}
@@ -47,14 +61,16 @@ export function SiteHeader() {
             <Link
               key={l.href}
               href={l.href}
-              className={`rounded-full px-3 py-2 text-sm font-medium transition hover:text-berry ${pathname.startsWith(l.href) ? "text-berry" : "text-choco-light"}`}
+              className={`rounded-full px-3 py-2 font-display text-base font-medium uppercase tracking-wider transition hover:text-berry ${pathname.startsWith(l.href) ? "text-berry" : "text-choco"}`}
             >
               {l.label}
             </Link>
           ))}
         </nav>
 
-        <div className="ml-auto flex items-center gap-2">
+        {searchBox("relative ml-auto hidden w-56 lg:block")}
+
+        <div className="ml-auto flex items-center gap-2 lg:ml-2">
           {user ? (
             <>
               <Link href={homeFor(user.role)} className="btn-ghost btn-sm" title="My account">
@@ -79,8 +95,9 @@ export function SiteHeader() {
 
       {open && (
         <nav className="container-page flex flex-col gap-1 pb-4 md:hidden">
+          {searchBox("relative mb-2")}
           {links.map((l) => (
-            <Link key={l.href} href={l.href} onClick={() => setOpen(false)} className="rounded-xl px-3 py-2.5 font-medium hover:bg-cream-dark">
+            <Link key={l.href} href={l.href} onClick={() => setOpen(false)} className="rounded-xl px-3 py-2.5 font-display text-lg uppercase tracking-wide hover:bg-cream-dark">
               {l.label}
             </Link>
           ))}
