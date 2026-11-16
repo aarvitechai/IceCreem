@@ -9,6 +9,7 @@ import { ProductCard, ProductGridSkeleton } from "@/components/product/product-c
 import { AppImage } from "@/components/ui";
 import { brand, telLink, whatsappLink } from "@/lib/brand";
 import { PostCard } from "@/components/blog/post-card";
+import { HomeReviews } from "@/components/reviews/home-reviews";
 import { posts } from "@/lib/blog";
 import { occasions } from "@/lib/occasions";
 import { serverApi } from "@/lib/server-api";
@@ -105,6 +106,13 @@ export default function HomePage() {
             <AppImage src="/images/packages/gold.svg" alt="Kulfi cart" className="rounded-3xl object-cover" />
           </div>
         </div>
+      </section>
+
+      <section className="reveal container-page">
+        <SectionTitle title="What customers say" />
+        <Suspense fallback={<div className="h-40 animate-pulse rounded-3xl bg-cream-dark" />}>
+          <HomeReviews />
+        </Suspense>
       </section>
 
       <section className="reveal container-page">
