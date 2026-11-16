@@ -52,6 +52,11 @@ API docs: http://localhost:5080/scalar/v1
 The local connection string is in `backend/src/IceCream.Api/appsettings.Development.json`.
 Change `Server=localhost` if your SQL Server has a different name.
 
+## Deploy to Azure
+
+Step by step guide with diagrams: [docs/deploy-azure.md](docs/deploy-azure.md).
+One command from Azure Cloud Shell: `APP_ENV=staging bash deploy/azure/deploy.sh`.
+
 ## Run with Docker (full stack)
 
 ```bash
