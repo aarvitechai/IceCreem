@@ -3,6 +3,7 @@
 import { Minus, Plus } from "lucide-react";
 import { toast } from "sonner";
 import type { ProductCard } from "@/lib/types";
+import { useHydrated } from "@/lib/use-hydrated";
 import { addItem, removeItem, setQuantity } from "@/store/cartSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
 
@@ -10,7 +11,9 @@ import { useAppDispatch, useAppSelector } from "@/store/store";
 export function QuickAdd({ product }: { product: ProductCard }) {
   const dispatch = useAppDispatch();
   const id = product.quickVariantId;
-  const inCart = useAppSelector((s) => s.cart.items.find((i) => i.variantId === id)?.quantity ?? 0);
+  const hydrated = useHydrated();
+  const saved = useAppSelector((s) => s.cart.items.find((i) => i.variantId === id)?.quantity ?? 0);
+  const inCart = hydrated ? saved : 0;
 
   if (!id || product.quickVariantAvailable <= 0) {
     return <span className="btn w-full cursor-not-allowed bg-cream-dark text-choco/50">Sold out</span>;
