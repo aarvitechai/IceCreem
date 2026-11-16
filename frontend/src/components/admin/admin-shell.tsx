@@ -16,6 +16,7 @@ import { STAFF_ROLES } from "@/lib/roles";
 import type { UserRole } from "@/lib/types";
 import { api } from "@/store/api";
 import { useAppDispatch, useAppSelector } from "@/store/store";
+import { BrandLogo } from "@/components/layout/brand-logo";
 
 const ALL: UserRole[] = ["SuperAdmin", "Admin", "Staff"];
 const ADMINS: UserRole[] = ["SuperAdmin", "Admin"];
@@ -68,7 +69,7 @@ function Shell({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen lg:flex">
       <aside className={`fixed inset-y-0 left-0 z-40 w-64 transform bg-choco text-cream transition lg:static lg:translate-x-0 ${open ? "translate-x-0" : "-translate-x-full"}`}>
         <div className="flex h-16 items-center justify-between px-5">
-          <Link href="/" className="font-display text-lg font-bold">🍨 Scoop Factory</Link>
+          <Link href="/"><BrandLogo light /></Link>
           <button className="lg:hidden" onClick={() => setOpen(false)} aria-label="Close menu"><X className="size-5" /></button>
         </div>
         <nav className="space-y-1 px-3">

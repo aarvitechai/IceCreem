@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { useLogoutMutation } from "@/features/auth/api";
 import { useAppSelector } from "@/store/store";
+import { brand } from "@/lib/brand";
 
 /** Simple, thumb friendly frame for hawker and delivery screens. */
 export function MobileShell({ title, children }: { title: string; children: React.ReactNode }) {
@@ -15,7 +16,7 @@ export function MobileShell({ title, children }: { title: string; children: Reac
     <div className="mx-auto min-h-screen max-w-lg">
       <header className="sticky top-0 z-20 flex items-center justify-between bg-berry px-4 py-3 text-white">
         <div>
-          <Link href="/" className="text-xs text-white/80">🍨 Scoop Factory</Link>
+          <Link href="/" className="text-xs text-white/80">{brand.name}</Link>
           <div className="font-display text-lg font-bold">{title}</div>
         </div>
         <div className="flex items-center gap-2 text-sm">

@@ -4,6 +4,7 @@ import { Leaf, PartyPopper, Snowflake, Truck } from "lucide-react";
 import { HeroCarousel, ProductSlider } from "@/components/product/hero-carousel";
 import { ProductCard, ProductGridSkeleton } from "@/components/product/product-card";
 import { AppImage } from "@/components/ui";
+import { brand, telLink, whatsappLink } from "@/lib/brand";
 import { serverApi } from "@/lib/server-api";
 
 export default function HomePage() {
@@ -20,7 +21,7 @@ export default function HomePage() {
           { icon: Truck, title: "Cold chain delivery", text: "Free above Rs 499" },
           { icon: PartyPopper, title: "Wedding catering", text: "100 to 2000 guests" },
         ].map(({ icon: Icon, title, text }) => (
-          <div key={title} className="card flex items-center gap-3 p-4">
+          <div key={title} className="card flex flex-col items-start gap-3 p-4 sm:flex-row sm:items-center">
             <span className="rounded-2xl bg-berry-light p-3 text-berry"><Icon className="size-5" /></span>
             <div>
               <div className="text-sm font-semibold">{title}</div>
@@ -64,19 +65,31 @@ export default function HomePage() {
       </section>
 
       <section>
-        <h2 className="mb-6 text-2xl font-bold">What our customers say</h2>
-        <div className="grid gap-4 md:grid-cols-3">
+        <h2 className="mb-6 text-2xl font-bold sm:text-3xl">Order in three easy steps</h2>
+        <ol className="grid gap-4 md:grid-cols-3">
           {[
-            { name: "Ananya, Lucknow", text: "The mango tub tastes like real Alphonso. Delivery was cold and on time." },
-            { name: "Rohit and Neha", text: "Kulfi counter was the star of our wedding. 600 guests and zero stress." },
-            { name: "Mr. Verma", text: "We order the family pack every Sunday. Kids love the kesar pista." },
-          ].map((t) => (
-            <figure key={t.name} className="card p-6">
-              <div className="mb-2 text-mango" aria-label="5 stars">★★★★★</div>
-              <blockquote className="text-sm text-choco-light">&ldquo;{t.text}&rdquo;</blockquote>
-              <figcaption className="mt-3 text-sm font-semibold">{t.name}</figcaption>
-            </figure>
+            { title: "Pick your flavours", text: "Browse tubs, cones, kulfi and family packs. Prices include GST." },
+            { title: "Pay on delivery", text: "Cash or UPI at your door. Free delivery above Rs 499." },
+            { title: "Track it live", text: "Watch your order move from our freezer to your door, with a delivery OTP." },
+          ].map((s, i) => (
+            <li key={s.title} className="card flex gap-4 p-6">
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-berry-light font-display text-lg font-bold text-berry">{i + 1}</span>
+              <div>
+                <h3 className="font-semibold">{s.title}</h3>
+                <p className="mt-1 text-sm text-choco-light">{s.text}</p>
+              </div>
+            </li>
           ))}
+        </ol>
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-3xl bg-choco p-6 text-cream sm:p-8">
+          <div>
+            <h3 className="text-xl font-bold">Prefer to order by phone?</h3>
+            <p className="text-sm text-cream/75">Call or WhatsApp {brand.owner} on {brand.phoneDisplay}.</p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <a href={telLink} className="btn bg-white text-choco hover:bg-cream">Call now</a>
+            <a href={whatsappLink()} target="_blank" rel="noreferrer" className="btn bg-[#25d366] text-white hover:brightness-95">WhatsApp</a>
+          </div>
         </div>
       </section>
     </div>
@@ -100,9 +113,9 @@ async function Hero() {
 async function Categories() {
   const categories = (await serverApi.categories()) ?? [];
   return (
-    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+    <div className="-mx-4 flex snap-x gap-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 lg:grid-cols-5">
       {categories.map((c) => (
-        <Link key={c.id} href={`/products?category=${c.slug}`} className="card group overflow-hidden text-center transition hover:-translate-y-1">
+        <Link key={c.id} href={`/products?category=${c.slug}`} className="card group w-40 shrink-0 snap-start overflow-hidden text-center transition hover:-translate-y-1 sm:w-auto">
           <div className="relative aspect-square bg-cream-dark">
             <AppImage src={c.imageUrl} alt={c.name} className="object-cover transition group-hover:scale-105" />
           </div>
