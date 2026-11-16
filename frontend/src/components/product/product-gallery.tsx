@@ -14,7 +14,7 @@ export function ProductGallery({ images, name }: { images: ProductDetail["images
   return (
     <div className="space-y-3">
       <div
-        className="card relative aspect-square cursor-zoom-in overflow-hidden"
+        className="relative aspect-square cursor-zoom-in overflow-hidden rounded-[2rem] bg-pink-light shadow-sm ring-4 ring-white"
         onMouseMove={(e) => {
           const r = e.currentTarget.getBoundingClientRect();
           setZoom({ x: ((e.clientX - r.left) / r.width) * 100, y: ((e.clientY - r.top) / r.height) * 100 });
