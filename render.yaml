@@ -1,0 +1,65 @@
+# Render Blueprint: free test environment for Desired Ice Cream.
+# Creates a PostgreSQL database, the .NET API and the Next.js website from the staging branch.
+# Guide: docs/deploy-render.md
+
+databases:
+  - name: desiredicecream-db
+    plan: free
+    region: singapore
+    databaseName: icecream
+    user: icecream
+
+services:
+  - type: web
+    name: desiredicecream-api
+    runtime: docker
+    plan: free
+    region: singapore
+    branch: staging
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health/live
+    autoDeploy: true
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: PORT
+        value: "8080"
+      - key: Database__Provider
+        value: Postgres
+      - key: Database__MigrateOnStartup
+        value: "true"
+      - key: ConnectionStrings__Default
+        fromDatabase:
+          name: desiredicecream-db
+          property: connectionString
+      - key: Jwt__Key
+        generateValue: true
+      # Asked once when you create the Blueprint. First password of the starter admin users.
+      - key: Seed__DefaultPassword
+        sync: false
+
+  - type: web
+    name: desiredicecream-web
+    runtime: docker
+    plan: free
+    region: singapore
+    branch: staging
+    rootDir: frontend
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /about
+    autoDeploy: true
+    domains:
+      - desiredicecream.redstarvibe.com
+    envVars:
+      # Public address of the API service above. Change it if Render gives the API a different URL.
+      - key: API_INTERNAL_URL
+        value: https://desiredicecream-api.onrender.com
+      - key: NEXT_PUBLIC_SHOW_DEMO_LOGINS
+        value: "false"
+      - key: PORT
+        value: "3000"
+      - key: HOSTNAME
+        value: 0.0.0.0

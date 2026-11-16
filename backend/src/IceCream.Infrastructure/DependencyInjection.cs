@@ -17,15 +17,7 @@ public static class DependencyInjection
             .ValidateOnStart();
 
         services.AddScoped<AuditInterceptor>();
-        services.AddDbContext<AppDbContext>((sp, options) =>
-        {
-            var conn = config.GetConnectionString("Default")
-                ?? throw new InvalidOperationException("ConnectionStrings:Default is missing.");
-            options.UseSqlServer(conn, sql => sql
-                .EnableRetryOnFailure(3)
-                .UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
-            options.AddInterceptors(sp.GetRequiredService<AuditInterceptor>());
-        });
+        AddDatabase(services, config);
         services.AddScoped<IAppDbContext>(sp => sp.GetRequiredService<AppDbContext>());
 
         services.AddHttpContextAccessor();
@@ -37,5 +29,58 @@ public static class DependencyInjection
         services.AddScoped<DbSeeder>();
 
         return services;
+    }
+
+    /// <summary>Database:Provider picks SqlServer (default) or Postgres. Both share one model.</summary>
+    private static void AddDatabase(IServiceCollection services, IConfiguration config)
+    {
+        var conn = config.GetConnectionString("Default")
+            ?? throw new InvalidOperationException("ConnectionStrings:Default is missing.");
+        var provider = config["Database:Provider"] ?? "SqlServer";
+
+        if (provider.Equals("Postgres", StringComparison.OrdinalIgnoreCase))
+        {
+            // Must be set before Npgsql builds its type mappings; see PostgresAppDbContext.
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+            services.AddDbContext<AppDbContext, PostgresAppDbContext>((sp, options) =>
+            {
+                options.UseNpgsql(ToNpgsqlConnectionString(conn), pg => pg
+                    .EnableRetryOnFailure(3)
+                    .UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
+                options.AddInterceptors(sp.GetRequiredService<AuditInterceptor>());
+            });
+            return;
+        }
+
+        services.AddDbContext<AppDbContext>((sp, options) =>
+        {
+            options.UseSqlServer(conn, sql => sql
+                .EnableRetryOnFailure(3)
+                .UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
+            options.AddInterceptors(sp.GetRequiredService<AuditInterceptor>());
+        });
+    }
+
+    /// <summary>
+    /// Hosts like Render give "postgresql://user:pass@host:port/db". Npgsql wants key=value pairs.
+    /// </summary>
+    public static string ToNpgsqlConnectionString(string conn)
+    {
+        if (!conn.StartsWith("postgres://", StringComparison.OrdinalIgnoreCase)
+            && !conn.StartsWith("postgresql://", StringComparison.OrdinalIgnoreCase))
+            return conn;
+
+        var uri = new Uri(conn);
+        var userInfo = uri.UserInfo.Split(':', 2);
+        var builder = new Npgsql.NpgsqlConnectionStringBuilder
+        {
+            Host = uri.Host,
+            Port = uri.IsDefaultPort || uri.Port <= 0 ? 5432 : uri.Port,
+            Username = Uri.UnescapeDataString(userInfo[0]),
+            Password = userInfo.Length > 1 ? Uri.UnescapeDataString(userInfo[1]) : null,
+            Database = uri.AbsolutePath.TrimStart('/'),
+            SslMode = Npgsql.SslMode.Prefer
+        };
+        return builder.ConnectionString;
     }
 }

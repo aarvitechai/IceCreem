@@ -11,6 +11,7 @@
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="$(AspNetVersion)" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="$(AspNetVersion)" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="$(AspNetVersion)" />
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="$(AspNetVersion)" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="$(AspNetVersion)" />
     <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="$(AspNetVersion)" />
