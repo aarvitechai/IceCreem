@@ -6,6 +6,7 @@ import { useState } from "react";
 import { LayoutDashboard, LogOut, Menu, Search, ShoppingBag, User, X } from "lucide-react";
 import { useLogoutMutation } from "@/features/auth/api";
 import { homeFor } from "@/lib/roles";
+import { useHydrated } from "@/lib/use-hydrated";
 import { useAppSelector } from "@/store/store";
 import { BrandLogo } from "./brand-logo";
 import { brand } from "@/lib/brand";
@@ -23,7 +24,9 @@ export function SiteHeader() {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const user = useAppSelector((s) => s.auth.user);
-  const count = useAppSelector((s) => s.cart.items.reduce((n, i) => n + i.quantity, 0));
+  const hydrated = useHydrated();
+  const saved = useAppSelector((s) => s.cart.items.reduce((n, i) => n + i.quantity, 0));
+  const count = hydrated ? saved : 0;
   const [logout] = useLogoutMutation();
 
   const search = (e: React.FormEvent<HTMLFormElement>) => {

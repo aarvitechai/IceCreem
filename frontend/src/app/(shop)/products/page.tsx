@@ -15,15 +15,23 @@ type Search = Record<string, string | string[] | undefined>;
 
 export default function ProductsPage({ searchParams }: { searchParams: Promise<Search> }) {
   return (
-    <div className="container-page py-8">
-      <h1 className="mb-2 text-3xl font-bold">All ice creams</h1>
-      <p className="mb-6 text-choco-light">Prices include GST. Free delivery above Rs 499.</p>
+    <div className="pb-8">
+      <section className="relative overflow-hidden bg-gradient-to-br from-berry to-pink py-10 text-center text-white sm:py-14">
+        <span aria-hidden className="absolute -left-10 -top-10 size-40 rounded-full bg-white/10" />
+        <span aria-hidden className="absolute -bottom-16 right-4 size-52 rounded-full bg-sun/30" />
+        <div className="container-page relative">
+          <h1 className="font-display text-4xl font-bold uppercase tracking-wide sm:text-6xl">Shop all treats</h1>
+          <p className="mt-2 text-white/90">Fresh every morning. Prices include GST. Free delivery above Rs 499.</p>
+        </div>
+      </section>
+      <div className="container-page pt-8">
       <Suspense fallback={<div className="mb-6 h-12 animate-pulse rounded-2xl bg-cream-dark" />}>
         <Filters />
       </Suspense>
       <Suspense fallback={<ProductGridSkeleton />}>
         <Results searchParams={searchParams} />
       </Suspense>
+      </div>
     </div>
   );
 }
@@ -58,14 +66,14 @@ async function Results({ searchParams }: { searchParams: Promise<Search> }) {
 
   return (
     <>
-      <p className="mb-4 text-sm text-choco-light">{result.totalCount} products</p>
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+      <p className="mb-4 text-sm font-semibold uppercase tracking-wider text-choco-light">{result.totalCount} {result.totalCount === 1 ? "treat" : "treats"}</p>
+      <div className="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
         {result.items.map((p) => <ProductCard key={p.id} product={p} />)}
       </div>
       {result.totalPages > 1 && (
         <div className="flex justify-center gap-3 pt-8">
           {result.page > 1 && <Link href={pageLink(result.page - 1)} className="btn-outline">Previous</Link>}
-          <span className="self-center text-sm text-choco-light">Page {result.page} of {result.totalPages}</span>
+          <span className="self-center text-sm font-semibold uppercase tracking-wider text-choco-light">Page {result.page} of {result.totalPages}</span>
           {result.page < result.totalPages && <Link href={pageLink(result.page + 1)} className="btn-outline">Next</Link>}
         </div>
       )}
