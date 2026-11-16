@@ -96,12 +96,12 @@ interface FieldProps {
 }
 
 export const TextField = forwardRef<HTMLInputElement, FieldProps & InputHTMLAttributes<HTMLInputElement>>(
-  function TextField({ label, error, hint, id, ...rest }, ref) {
+  function TextField({ label, error, hint, id, className = "input", ...rest }, ref) {
     const fieldId = id ?? rest.name;
     return (
       <div>
         <label htmlFor={fieldId} className="label">{label}</label>
-        <input id={fieldId} ref={ref} className="input" aria-invalid={!!error} {...rest} />
+        <input id={fieldId} ref={ref} className={className} aria-invalid={!!error} {...rest} />
         {hint && !error && <p className="mt-1 text-xs text-choco-light">{hint}</p>}
         {error && <p className="field-error">{error}</p>}
       </div>
