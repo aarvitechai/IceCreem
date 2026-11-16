@@ -168,12 +168,18 @@ export function Pager({ page, totalPages, onChange }: { page: number; totalPages
 }
 
 export function StatCard({ title, value, hint, tone = "berry" }: { title: string; value: string | number; hint?: string; tone?: "berry" | "mint" | "mango" | "choco" }) {
-  const tones = { berry: "bg-berry-light", mint: "bg-mint-light", mango: "bg-mango-light", choco: "bg-cream-dark" };
+  const tones = {
+    berry: "from-berry to-pink text-white",
+    mint: "from-[#2fa58b] to-[#1f8a73] text-white",
+    mango: "from-sun to-[#f4a51c] text-choco",
+    choco: "from-choco to-[#4a3530] text-cream",
+  };
   return (
-    <div className="card p-5">
-      <div className={`mb-3 inline-flex rounded-xl px-2.5 py-1 text-xs font-semibold ${tones[tone]}`}>{title}</div>
-      <div className="text-2xl font-bold">{value}</div>
-      {hint && <div className="mt-1 text-xs text-choco-light">{hint}</div>}
+    <div className={`relative overflow-hidden rounded-3xl bg-gradient-to-br p-5 shadow-sm ${tones[tone]}`}>
+      <span aria-hidden className="absolute -right-6 -top-6 size-20 rounded-full bg-white/15" />
+      <div className="relative text-xs font-semibold uppercase tracking-wider opacity-90">{title}</div>
+      <div className="relative mt-2 font-display text-3xl font-bold tracking-wide">{value}</div>
+      {hint && <div className="relative mt-1 text-xs opacity-85">{hint}</div>}
     </div>
   );
 }

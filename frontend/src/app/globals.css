@@ -68,7 +68,7 @@ h4 {
   @apply rounded-3xl bg-white shadow-sm ring-1 ring-choco/5;
 }
 @utility card {
-  @apply rounded-2xl border border-choco/10 bg-white shadow-sm;
+  @apply rounded-3xl bg-white shadow-sm ring-1 ring-choco/5;
 }
 @utility input {
   @apply w-full rounded-xl border border-choco/15 bg-white px-3.5 py-2.5 text-sm outline-none transition placeholder:text-choco/40 focus:border-berry focus:ring-2 focus:ring-berry/20;
@@ -85,7 +85,7 @@ h4 {
     @apply w-full text-left text-sm;
   }
   .table-base th {
-    @apply bg-cream px-4 py-3 text-xs font-semibold uppercase tracking-wide text-choco-light;
+    @apply bg-cream px-4 py-3 text-xs font-semibold uppercase tracking-wider text-choco-light first:rounded-l-xl last:rounded-r-xl;
   }
   .table-base td {
     @apply border-t border-choco/5 px-4 py-3 align-middle;
