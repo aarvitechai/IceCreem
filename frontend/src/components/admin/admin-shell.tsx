@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Suspense, useState } from "react";
 import {
-  BarChart3, Boxes, CalendarHeart, ClipboardList, ExternalLink, Factory, FileClock, IceCreamCone, LayoutDashboard, LogOut, Menu, Tags, Ticket, Truck, Users, X,
+  BarChart3, Boxes, CalendarHeart, ClipboardList, ExternalLink, Factory, FileClock, IceCreamCone, LayoutDashboard, LogOut, Menu, MessageSquareHeart, Tags, Ticket, Truck, Users, X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { RequireAuth } from "@/components/auth/require-auth";
@@ -29,6 +29,7 @@ const nav = [
   { href: "/admin/products", label: "Products", icon: IceCreamCone, roles: ADMINS },
   { href: "/admin/categories", label: "Categories", icon: Tags, roles: ADMINS },
   { href: "/admin/coupons", label: "Coupons", icon: Ticket, roles: ADMINS },
+  { href: "/admin/reviews", label: "Reviews", icon: MessageSquareHeart, roles: ADMINS },
   { href: "/admin/inventory", label: "Inventory", icon: Boxes, roles: ALL },
   { href: "/admin/production", label: "Production", icon: Factory, roles: ALL },
   { href: "/admin/hawkers", label: "Hawkers", icon: Truck, roles: ALL },

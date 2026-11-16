@@ -12,11 +12,17 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace IceCream.IntegrationTests;
 
-/// <summary>Runs the real API in memory with an in memory database and demo seed data.</summary>
+/// <summary>
+/// Runs the real API in memory with demo seed data. By default it uses the EF in memory database.
+/// Set ICECREAM_TEST_SQLSERVER to a SQL Server connection string (without Database=) to run the same
+/// tests against a real, throw away SQL Server database, which also checks the SQL that EF generates.
+/// </summary>
 public sealed class ApiFactory : WebApplicationFactory<Program>
 {
     public const string Password = "Admin@123";
     private readonly string _dbName = $"icecream-tests-{Guid.NewGuid():N}";
+    private static readonly string? SqlServer = Environment.GetEnvironmentVariable("ICECREAM_TEST_SQLSERVER");
+    private string SqlConnection => $"{SqlServer!.TrimEnd(';')};Database={_dbName}";
 
     public static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web)
     {
@@ -39,10 +45,24 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
         {
             services.RemoveAll<DbContextOptions<AppDbContext>>();
             services.RemoveAll<IDbContextOptionsConfiguration<AppDbContext>>();
-            services.AddDbContext<AppDbContext>((sp, o) => o
-                .UseInMemoryDatabase(_dbName)
-                .AddInterceptors(sp.GetRequiredService<AuditInterceptor>()));
+            services.AddDbContext<AppDbContext>((sp, o) =>
+            {
+                if (string.IsNullOrWhiteSpace(SqlServer)) o.UseInMemoryDatabase(_dbName);
+                else o.UseSqlServer(SqlConnection);
+                o.AddInterceptors(sp.GetRequiredService<AuditInterceptor>());
+            });
         });
+    }
+
+    /// <summary>Drops the throw away SQL Server database after the test class finishes.</summary>
+    public override async ValueTask DisposeAsync()
+    {
+        if (!string.IsNullOrWhiteSpace(SqlServer))
+        {
+            using var scope = Services.CreateScope();
+            await scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.EnsureDeletedAsync();
+        }
+        await base.DisposeAsync();
     }
 
     public async Task<HttpClient> ClientAsAsync(string email)
