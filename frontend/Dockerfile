@@ -12,8 +12,12 @@ WORKDIR /app
 # Rewrites and server rendering call the API by its internal address.
 ARG API_INTERNAL_URL=http://api:8080
 ARG NEXT_PUBLIC_SHOW_DEMO_LOGINS=false
+ARG NEXT_PUBLIC_SITE_URL=https://desiredicecream.redstarvibe.com
+ARG NEXT_PUBLIC_NOINDEX=false
 ENV API_INTERNAL_URL=$API_INTERNAL_URL \
     NEXT_PUBLIC_SHOW_DEMO_LOGINS=$NEXT_PUBLIC_SHOW_DEMO_LOGINS \
+    NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL \
+    NEXT_PUBLIC_NOINDEX=$NEXT_PUBLIC_NOINDEX \
     NEXT_TELEMETRY_DISABLED=1
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
