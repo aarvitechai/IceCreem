@@ -9,6 +9,9 @@ export const brand = {
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "https://desiredicecream.redstarvibe.com",
 } as const;
 
+/** True on test sites (staging): search engines are told not to index them. */
+export const noIndex = process.env.NEXT_PUBLIC_NOINDEX === "true";
+
 export const telLink = `tel:${brand.phoneE164}`;
 export const whatsappLink = (text = `Hi ${brand.name}, I want to place an order.`) =>
   `https://wa.me/${brand.whatsapp}?text=${encodeURIComponent(text)}`;
