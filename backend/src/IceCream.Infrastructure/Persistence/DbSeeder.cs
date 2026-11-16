@@ -126,9 +126,9 @@ public sealed class DbSeeder(AppDbContext db, IPasswordService passwords, IClock
             ("KPF-2000", "2 litre pack", 499, 450, 40));
 
         db.Banners.AddRange(
-            new Banner { Title = "Freshly Churned, Every Morning", Subtitle = "Farm milk. Real fruit. Zero shortcuts.", ImageUrl = "/images/banners/hero-1.svg", LinkUrl = "/products", SortOrder = 1 },
-            new Banner { Title = "Make Your Wedding Sweeter", Subtitle = "Live counters and kulfi carts for 100 to 2000 guests.", ImageUrl = "/images/banners/hero-2.svg", LinkUrl = "/wedding", SortOrder = 2 },
-            new Banner { Title = "Mango Season Is Here", Subtitle = "Alphonso mango tubs at a special price.", ImageUrl = "/images/banners/hero-3.svg", LinkUrl = "/products/alphonso-mango", SortOrder = 3 },
+            new Banner { Title = "Freshly churned. Delivered cold.", Subtitle = "Desired Icream is made every morning with farm milk and real fruit. Order online or on WhatsApp.", ImageUrl = "/images/banners/hero-1.svg", LinkUrl = "/products", SortOrder = 1 },
+            new Banner { Title = "Make your wedding sweeter", Subtitle = "Live ice cream counters and kulfi carts for 100 to 2000 guests.", ImageUrl = "/images/banners/hero-2.svg", LinkUrl = "/wedding", SortOrder = 2 },
+            new Banner { Title = "Real Alphonso mango", Subtitle = "Our best seller tub, made with real mango pulp.", ImageUrl = "/images/banners/hero-3.svg", LinkUrl = "/products/alphonso-mango", SortOrder = 3 },
             new Banner { Title = "10 percent off your first order", Subtitle = "Use code WELCOME10", ImageUrl = "/images/banners/offer-1.svg", LinkUrl = "/products", Position = BannerPosition.Offer, SortOrder = 1 },
             new Banner { Title = "Free delivery above Rs 499", Subtitle = "Across the city", ImageUrl = "/images/banners/offer-2.svg", LinkUrl = "/products", Position = BannerPosition.Offer, SortOrder = 2 });
 
