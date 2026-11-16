@@ -30,6 +30,7 @@ export function SiteFooter() {
             <li><Link href="/products?category=family" className="hover:text-white">Family Packs</Link></li>
             <li><Link href="/gallery" className="hover:text-white">Gallery</Link></li>
             <li><Link href="/blog" className="hover:text-white">Blog</Link></li>
+            <li><Link href="/testimonials" className="hover:text-white">Customer reviews</Link></li>
           </ul>
         </div>
         <div>

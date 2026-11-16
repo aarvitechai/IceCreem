@@ -99,10 +99,12 @@ Coupons: `WELCOME10` (10 percent above Rs 300, max Rs 100) and `FLAT50` (Rs 50 a
 
 ## Tests
 
-```bash
-cd backend && dotnet test                         # 22 unit + 9 integration tests
-cd frontend && npx eslint src && npx tsc --noEmit && npm run build
-```
+| What | Command | Runs in CI |
+|---|---|---|
+| Backend unit and integration tests (in memory DB) | `cd backend && dotnet test` | Yes |
+| Same integration tests on real SQL Server | set `ICECREAM_TEST_SQLSERVER="Server=localhost;Trusted_Connection=True;TrustServerCertificate=True"` then `dotnet test tests/IceCream.IntegrationTests` | Yes (SQL Server container) |
+| Frontend unit tests (Vitest) | `cd frontend && npm test` | Yes |
+| Browser checks: every page, every role, customer journeys | start Chrome with `--headless=new --remote-debugging-port=9333`, run the site, then `node scripts/browser-checks/pages.mjs`, `roles.mjs`, `journeys.mjs` | No (manual) |
 
 ## Project structure
 

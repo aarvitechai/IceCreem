@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { ArrowLeft, ArrowRight, Clock, Lightbulb } from "lucide-react";
 import { PostCard } from "@/components/blog/post-card";
 import { ShareButtons } from "@/components/share/share-buttons";
-import { AppImage } from "@/components/ui";
+import { AppImage, PageLoader } from "@/components/ui";
 import { brand, whatsappLink } from "@/lib/brand";
 import { postBySlug, postDate, posts, readMinutes, type Block } from "@/lib/blog";
 
@@ -25,7 +26,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function PostPage({ params }: Props) {
+// Reading params inside Suspense keeps navigation to a post instant.
+export default function PostPage({ params }: Props) {
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <Post params={params} />
+    </Suspense>
+  );
+}
+
+async function Post({ params }: Props) {
   const post = postBySlug((await params).slug);
   if (!post) notFound();
 

@@ -200,4 +200,62 @@ public sealed class ApiTests(ApiFactory factory) : IClassFixture<ApiFactory>
         Assert.Equal(HttpStatusCode.Created, res.StatusCode);
         Assert.Equal("Birthday", (await res.DataAsync()).GetProperty("eventType").GetString());
     }
+
+    [Fact]
+    public async Task Review_shows_only_after_admin_approves_and_never_exposes_mobile()
+    {
+        var guest = factory.CreateClient();
+        var comment = $"Lovely kulfi at our function {Guid.NewGuid():N}";
+        var sent = await guest.PostAsJsonAsync("/api/v1/reviews", new
+        {
+            customerName = "Anita", city = "Varanasi", mobile = "9876543210", occasion = "Wedding", rating = 5, comment
+        });
+        Assert.Equal(HttpStatusCode.Created, sent.StatusCode);
+
+        var before = await (await guest.GetAsync("/api/v1/reviews?pageSize=100")).DataAsync();
+        Assert.DoesNotContain(before.GetProperty("reviews").GetProperty("items").EnumerateArray(), r => r.GetProperty("comment").GetString() == comment);
+
+        var admin = await factory.ClientAsAsync(Admin);
+        var pending = await (await admin.GetAsync("/api/v1/admin/reviews?status=Pending&pageSize=100")).DataAsync();
+        var id = pending.GetProperty("items").EnumerateArray().First(r => r.GetProperty("comment").GetString() == comment).GetProperty("id").GetInt64();
+        var approved = await admin.PatchAsJsonAsync($"/api/v1/admin/reviews/{id}", new { status = "Approved", isFeatured = true });
+        Assert.Equal(HttpStatusCode.OK, approved.StatusCode);
+
+        var res = await guest.GetAsync("/api/v1/reviews?pageSize=100");
+        var raw = await res.Content.ReadAsStringAsync();
+        Assert.Contains(comment, raw);
+        Assert.DoesNotContain("9876543210", raw);
+        var after = await res.DataAsync();
+        Assert.True(after.GetProperty("summary").GetProperty("count").GetInt32() >= 1);
+    }
+
+    [Fact]
+    public async Task Review_from_a_bot_is_dropped_and_bad_rating_is_rejected()
+    {
+        var guest = factory.CreateClient();
+        var botText = $"Buy cheap stuff now {Guid.NewGuid():N}";
+        var bot = await guest.PostAsJsonAsync("/api/v1/reviews", new
+        {
+            customerName = "Bot", occasion = "Wedding", rating = 5, comment = botText, website = "http://spam.example"
+        });
+        Assert.Equal(HttpStatusCode.Created, bot.StatusCode);
+
+        var admin = await factory.ClientAsAsync(Admin);
+        var all = await (await admin.GetAsync($"/api/v1/admin/reviews?search={botText[..20]}&pageSize=100")).Content.ReadAsStringAsync();
+        Assert.DoesNotContain(botText, all);
+
+        var bad = await guest.PostAsJsonAsync("/api/v1/reviews", new
+        {
+            customerName = "Ravi", occasion = "Wedding", rating = 9, comment = "Too many stars here"
+        });
+        Assert.Equal(HttpStatusCode.BadRequest, bad.StatusCode);
+    }
+
+    [Fact]
+    public async Task Customers_cannot_moderate_reviews()
+    {
+        var customer = await factory.ClientAsAsync(Customer);
+        var res = await customer.GetAsync("/api/v1/admin/reviews");
+        Assert.Equal(HttpStatusCode.Forbidden, res.StatusCode);
+    }
 }

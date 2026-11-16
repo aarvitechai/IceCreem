@@ -2,7 +2,7 @@
 export function SpinStamp({ className = "relative" }: { className?: string }) {
   const text = "FRESHLY CHURNED • DELIVERED COLD • MADE WITH LOVE • ";
   return (
-    <div className={`size-32 sm:size-36 ${className}`} aria-hidden>
+    <div className={`size-32 overflow-hidden rounded-full sm:size-36 ${className}`} aria-hidden>
       <svg viewBox="0 0 200 200" className="spin-slow absolute inset-0 size-full">
         <defs>
           <path id="stamp-circle" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0" />

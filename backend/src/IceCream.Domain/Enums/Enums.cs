@@ -96,3 +96,10 @@ public enum HawkerIssueStatus
     Issued = 1,
     Settled = 2
 }
+
+public enum ReviewStatus
+{
+    Pending = 1,
+    Approved = 2,
+    Rejected = 3
+}

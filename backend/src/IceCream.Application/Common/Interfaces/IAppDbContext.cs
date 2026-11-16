@@ -29,6 +29,7 @@ public interface IAppDbContext
     DbSet<Hawker> Hawkers { get; }
     DbSet<HawkerStockIssue> HawkerStockIssues { get; }
     DbSet<AuditLog> AuditLogs { get; }
+    DbSet<Review> Reviews { get; }
 
     Task<int> SaveChangesAsync(CancellationToken ct = default);
 }
